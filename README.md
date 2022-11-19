@@ -1,9 +1,12 @@
-
+This project was tested with version 1.9.1 on a generic ESP8266 board.  
 
 # MicroPython
-Load MicroPython onto your board.  This project was tested with version 1.9.1 on a generic ESP8266 board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html
+Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html
 
-The default board name is `pyboard`  This means that `rshell` refers to the IOT device file system as `/pyboard`.
+# rshell
+This document assumes you use rshell to push and pull changes from your IoT device running micropython
+
+The default board name in `rshell` is `pyboard`  This means that `rshell` refers to the IOT device file system as `/pyboard`.
 
 # Setup 
 1. Install IDE (I use VisualCode)
