@@ -32,7 +32,8 @@ cp toggle.py /pyboard
 cp webserver.py /pyboard
 ```
 
-## Execution
+
+# Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
 1. Correctly configured config.py
 1. Pushed the files to the ESP8266 as specified above
@@ -77,6 +78,14 @@ ctrl-c
 Exit the REPL with
 ```
 ctrl-x
+```
+
+## Restart the board to run boot() and main()
+
+Restart the board or run these commands from REPL
+```
+import machine
+machine.reset()
 ```
 
 ## Sample Output running main() from REPL
