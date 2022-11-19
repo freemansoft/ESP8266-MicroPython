@@ -6,15 +6,19 @@ graph LR;
     SerialAdapter[USB-to-Serial Adpater]
     Sensors[Various Sensors]
     Buttons[Switches, ec.]
+    Relays
+    Servos
     ESP8266[IOT dev board ESP8266]
     Cloud
 
+
     DevMachine --- |connected| SerialAdapter
     SerialAdapter --- |Connected|ESP8266
-    ESP8266 --> Cloud
+    ESP8266 <--> Cloud
     Sensors --> ESP8266
     Buttons --> ESP8266
-
+    ESP8266 --> Servos
+    ESP8266 --> Relays
 ```
 
 # MicroPython
