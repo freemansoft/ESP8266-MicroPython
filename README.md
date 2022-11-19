@@ -1,5 +1,22 @@
 This project was tested with version 1.9.1 on a generic ESP8266 board.  
 
+```mermaid
+graph LR;
+    DevMachine[Developer Machine]
+    SerialAdapter[USB-to-Serial Adpater]
+    Sensors[Various Sensors]
+    Buttons[Switches, ec.]
+    ESP8266[IOT dev board ESP8266]
+    Cloud
+
+    DevMachine --- |connected| SerialAdapter
+    SerialAdapter --- |Connected|ESP8266
+    ESP8266 --> Cloud
+    Sensors --> ESP8266
+    Buttons --> ESP8266
+
+```
+
 # MicroPython
 Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html
 
