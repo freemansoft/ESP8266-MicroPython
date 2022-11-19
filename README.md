@@ -27,38 +27,32 @@ cp toggle.py /pyboard
 ```
 
 ## Execution
+You can exercise the utilities in this package from the REPL. This assumes that you have 
+1. Correctly configured config.py
+1. Pushed the files to the ESP8266 as specified above
 
-enter the REPL from `rshell` with 
+Enter the REPL from `rshell` with 
 ```
 repl
-
 ```
-
-connect to the internet with
+Connect to local wifi with
 ```
 from main import main
 main()
-
 ```
 Now flash the lights
 ```
 from toggle import toggle_pin
 toggle_pin(2,1000,10)
-
 ```
-
 Terminate the MicroPython program
 ```
 ctrl-c
-
 ```
-
 Exit the REPL with
 ```
 ctrl-x
-
 ```
-
 
 ## Sample Output
 ```
