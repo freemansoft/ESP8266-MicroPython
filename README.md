@@ -32,6 +32,26 @@ cp toggle.py /pyboard
 cp webserver.py /pyboard
 ```
 
+```mermaid
+sequenceDiagram
+participant main
+participant config
+participant connectwifi
+participant webserver
+participant network
+participant webclient
+
+main ->> config: loads
+main ->> connectwifi: new()
+main ->> connectwifi: connect
+connectwifi ->> network: dhcp_request
+network -->> connectwifi: IP address
+main ->> webserver: new()
+main ->> webserver: run()
+webclient ->> webserver: request
+webserver ->> webserver: process()
+webserver -->> webclient: done
+```
 
 # Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
