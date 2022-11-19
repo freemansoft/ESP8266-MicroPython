@@ -17,6 +17,9 @@ The default board name in `rshell` is `pyboard`  This means that `rshell` refers
         * Mine Windows 10 path was `C:\Users\joe\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts`
 1. Clone this repo
 1. Copy `config-template.py.template` to `config.py` and put your values into `config.py`
+    * 
+    *
+    * hostname: The hostname should appear in your DHCP name table.  In my case a `hostname` of `FreemanFrak` became a DNS entry of `freemanfrak.fios-router.home`
 1. rshell
     1. `connect serial COM6` or whatever your com port is
 1. rshell
@@ -42,7 +45,7 @@ Connect to local wifi with
 ```
 from config import ssid, password
 from connectwifi import WIFI
-conn = WIFI(ssid, password, "myhostname")
+conn = WIFI(ssid, password, hostname)
 conn.do_connect()
 ```
 Now flash the lights
@@ -76,7 +79,8 @@ Exit the REPL with
 ctrl-x
 ```
 
-## Sample Output
+## Sample Output running main() from REPL
+
 ```
 C:\Users\joe\Documents\GitHub\MicroPython> repl
 Entering REPL. Use Control-X to exit.
@@ -119,6 +123,17 @@ KeyboardInterrupt:
     _control-x_
 ```
 
+## pinging to find the full name.  
+I set my hostname to FreemanFrak which resulted in the following
+```
+C:\GitHub\ESP8266-MicroPython>ping FreemanFrak
+
+Pinging FreemanFrak.fios-router.home [192.168.1.238] with 32 bytes of data:
+Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
+Reply from 192.168.1.238: bytes=32 time=2ms TTL=255
+Reply from 192.168.1.238: bytes=32 time=2ms TTL=255
+Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
+```
 
 # References
 Used while initially creating this

@@ -5,7 +5,7 @@ import gc
 
 
 class WebServer(object):
-    '''webserver that can change output pins'''
+    """webserver that can change output pins"""
 
     def __init__(self, ledpinnumbr, relaypinnumber):
         self.ledpinnumber = ledpinnumbr
@@ -31,28 +31,29 @@ class WebServer(object):
 
     def _handle_request(self, request):
 
-        relay_on = request.find('relay=on')
-        relay_off = request.find('relay=off')
-        led_on = request.find('led=on')
-        led_off = request.find('led=off')
+        relay_on = request.find("relay=on")
+        relay_off = request.find("relay=off")
+        led_on = request.find("led=on")
+        led_off = request.find("led=off")
 
-        if led_on >= 0:
-            print('LED ON: 1')
-            self.led.value(1)
-        if led_off >= 0:
-            print('LED OFF: 0')
+        # content has referrer uri
+        if led_on == 8:
+            print("LED ON: ", led_on)
             self.led.value(0)
-        if relay_on >= 0:
-            print('RELAY ON: 1')
+        if led_off == 8:
+            print("LED OFF: ", led_off)
+            self.led.value(1)
+        if relay_on == 8:
+            print("RELAY ON: ", relay_on)
             self.relay.value(1)
-        if relay_off >= 0:
-            print('RELAY OFF: 0')
+        if relay_off == 8:
+            print("RELAY OFF: ", relay_off)
             self.relay.value(0)
 
     def run_server(self):
-        '''runs the web server'''
+        """runs the web server"""
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(('', 80))
+        s.bind(("", 80))
         s.listen(5)
         try:
             while True:
@@ -60,20 +61,20 @@ class WebServer(object):
                     gc.collect()
                 conn, addr = s.accept()
                 conn.settimeout(3.0)
-                print('Got a connection from %s' % str(addr))
+                print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024)
                 request = str(request)
-                print('Content = %s' % request)
+                print("Content = %s" % request)
 
                 self._handle_request(request)
 
                 response = self._web_page_html()
-                conn.send('HTTP/1.1 200 OK\n')
-                conn.send('Content-Type: text/html\n')
-                conn.send('Connection: close\n\n')
+                conn.send("HTTP/1.1 200 OK\n")
+                conn.send("Content-Type: text/html\n")
+                conn.send("Connection: close\n\n")
                 conn.sendall(response)
                 conn.close()
-                #print('Connection closed')
+                # print('Connection closed')
         except OSError as e:
             conn.close()
-            print('Connection closed on error')
+            print("Connection closed on error")
