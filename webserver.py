@@ -7,48 +7,66 @@ import gc
 class WebServer(object):
     """webserver that can change output pins"""
 
-    def __init__(self, ledpinnumbr, relaypinnumber):
-        self.ledpinnumber = ledpinnumbr
-        self.relaypinnumber = relaypinnumber
-        self.led = machine.Pin(self.ledpinnumber, machine.Pin.OUT)
-        self.relay = machine.Pin(self.relaypinnumber, machine.Pin.OUT)
+    def __init__(
+        self,
+        dev1_label,
+        dev1_pin_number,
+        dev1_on_is_high,
+        dev2_label,
+        dev2_pin_number,
+        dev2_on_is_high,
+    ):
+        self.dev1_label = dev1_label
+        self.dev1_pin_number = dev1_pin_number
+        self.dev1_on_is_high = dev1_on_is_high
+        self.dev2_label = dev2_label
+        self.dev2_pin_number = dev2_pin_number
+        self.dev2_on_is_high = dev2_on_is_high
+        self.led = machine.Pin(self.dev1_pin_number, machine.Pin.OUT)
+        self.relay = machine.Pin(self.dev2_pin_number, machine.Pin.OUT)
 
     def _web_page_html(self):
 
-        html = """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
+        html = (
+            """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="data:,"> <style>html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
     h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none; 
     border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
     .button2{background-color: #4286f4;}</style></head><body> <h1>ESP Web Server</h1> 
-    <p><strong>LED (2)</strong></p>
-    <p><a href="/?led=on"><button class="button button">ON</button></a></p>
-    <p><a href="/?led=off"><button class="button button2">OFF</button></a></p>
-    <p><strong>Relay (16)</strong></p>
-    <p><a href="/?relay=on"><button class="button button">ON</button></a></p>
-    <p><a href="/?relay=off"><button class="button button2">OFF</button></a></p>
+    """
+            + """<p><strong>"""
+            + self.dev1_label
+            + """</strong></p>
+    <p><a href="/?dev1=on"><button class="button button">ON</button></a><a href="/?dev1=off"><button class="button button2">OFF</button></a></p>
+    """
+            + """<p><strong>"""
+            + self.dev2_label
+            + """</strong></p>
+    <p><a href="/?dev2=on"><button class="button button">ON</button></a><a href="/?dev2=off"><button class="button button2">OFF</button></a></p>
     </body></html>"""
+        )
         return html
 
     def _handle_request(self, request):
 
-        relay_on = request.find("relay=on")
-        relay_off = request.find("relay=off")
-        led_on = request.find("led=on")
-        led_off = request.find("led=off")
+        dev1_on = request.find("dev1=on")
+        dev1_off = request.find("dev1=off")
+        dev2_on = request.find("dev2=on")
+        dev2_off = request.find("dev2=off")
 
-        # content has referrer uri
-        if led_on == 8:
-            print("LED ON: ", led_on)
-            self.led.value(0)
-        if led_off == 8:
-            print("LED OFF: ", led_off)
-            self.led.value(1)
-        if relay_on == 8:
-            print("RELAY ON: ", relay_on)
-            self.relay.value(1)
-        if relay_off == 8:
-            print("RELAY OFF: ", relay_off)
-            self.relay.value(0)
+        # fixed index because content has referrer uri
+        if dev1_on == 8:
+            print("DEV1 ON: ", dev1_on)
+            self.led.value(int(self.dev1_on_is_high))
+        if dev1_off == 8:
+            print("DEV1 OFF: ", dev1_off)
+            self.led.value(int(not self.dev1_on_is_high))
+        if dev2_on == 8:
+            print("DEV2 ON: ", dev2_on)
+            self.relay.value(int(self.dev2_on_is_high))
+        if dev2_off == 8:
+            print("DEV2 OFF: ", dev2_off)
+            self.relay.value(int(not self.dev2_on_is_high))
 
     def run_server(self):
         """runs the web server"""

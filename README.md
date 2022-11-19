@@ -62,7 +62,7 @@ http_get_print("http://micropython.org/ks/test.html")
 Start up a web page and hit the IP address from your browser
 ```
 from webserver import WebServer
-server = WebServer(2, 16)
+server = WebServer("LED",2, False, "Relay", 16, True)
 server.run_server()
 ```
 
