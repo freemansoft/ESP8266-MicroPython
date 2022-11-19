@@ -26,7 +26,7 @@ cp connectwifi.py /pyboard
 cp httpget.py /pyboard
 cp main.py /pyboard
 cp toggle.py /pyboard
-
+cp webserver.py /pyboard
 ```
 
 ## Execution
@@ -40,13 +40,32 @@ repl
 ```
 Connect to local wifi with
 ```
-from main import main
-main()
+from config import ssid, password
+from connectwifi import WIFI
+conn = WIFI(ssid, password, "myhostname")
+conn.do_connect()
 ```
 Now flash the lights
 ```
 from toggle import toggle_pin
 toggle_pin(2,1000,10)
+```
+Make a web request to a remote server
+```
+from httpget import http_get_print
+http_get_print("http://micropython.org/ks/test.html")
+```
+Start up a web page and hit the IP address from your browser
+```
+from webserver import WebServer
+server = WebServer(2, 16)
+server.run_server()
+```
+
+Do all of this by running main()
+```
+from main import main
+main()
 ```
 Terminate the MicroPython program
 ```
@@ -102,12 +121,29 @@ KeyboardInterrupt:
 
 
 # References
+Used while initially creating this
 
-* https://randomnerdtutorials.com/micropython-esp32-esp8266-vs-code-pymakr/
+ESP8266 
+
+MicroPython
 * https://docs.micropython.org/en/latest/esp8266/tutorial
+* https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html Using esptool to flash MicroPython onto 8266 board 
 * https://docs.micropython.org/en/latest/esp8266/tutorial/network_tcp.html
 * https://docs.micropython.org/en/latest/esp8266/tutorial/filesystem.html
 * https://forum.micropython.org/viewtopic.php?f=2&t=7969
-* **rshell** https://github.com/dhylands/rshell
 * https://blog.miguelgrinberg.com/post/micropython-and-the-internet-of-things-part-iii-building-a-micropython-application
 * https://techtutorialsx.com/2017/06/06/esp32-esp8266-micropython-automatic-connection-to-wifi/
+
+Web Server Examples based on the same core
+* https://randomnerdtutorials.com/esp32-esp8266-micropython-web-server/
+* https://randomnerdtutorials.com/micropython-esp32-esp8266-vs-code-pymakr/ Web server that handles GET query parameters
+* https://microcontrollerslab.com/esp32-esp8266-micropython-web-server/ Web server that handles GET requests
+
+rshell
+* https://github.com/dhylands/rshell
+
+Other : Wemos D1 cause that is compatible with the board I tested with.
+* https://www.wemos.cc/en/latest/tutorials/d1/get_started_with_micropython_d1.html
+* https://www.instructables.com/MicroPython-IoT-Rover-Based-on-WeMos-D1-ESP-8266EX/
+* https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/index.html
+* https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/setup.html

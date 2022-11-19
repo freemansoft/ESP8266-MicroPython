@@ -1,18 +1,22 @@
-# Brings in copies of the variables
+''' copies of the variables'''
 from config import ssid, password
-from connectwifi import WIFI
-from toggle import toggle_pin
 
-# lets me test main.py on boards that don't reset when main.py is updated
+from connectwifi import WIFI
+from webserver import WebServer
+from toggle import toggle_pin
+from httpget import http_get_print
+
+
 def main():
-    conn = WIFI(ssid, password)
+    '''lets us test main() without board reset'''
+    conn = WIFI(ssid, password, "myhostname")
     conn.do_connect()
 
-    from httpget import http_get_print
-
     http_get_print("http://micropython.org/ks/test.html")
-
     toggle_pin(2, 500, 10)
+
+    server = WebServer(2, 16)
+    server.run_server()
 
 
 if __name__ == "__main__":

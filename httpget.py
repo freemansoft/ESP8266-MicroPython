@@ -2,7 +2,6 @@ import socket
 
 
 def http_get_print(url):
-    import socket
 
     _, _, host, path = url.split("/", 3)
     addr = socket.getaddrinfo(host, 80)[0][-1]
