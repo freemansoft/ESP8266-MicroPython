@@ -3,20 +3,22 @@ This project was tested with version 1.9.1 on a generic ESP8266 board.
 ```mermaid
 graph LR;
     DevMachine[Developer Machine]
+    Browser(Web Browser)
     SerialAdapter[USB-to-Serial Adpater]
     Sensors[Various Sensors]
     Buttons[Switches, ec.]
     Relays
     Servos
-    ESP8266[IOT dev board ESP8266]
-    Cloud
+    ESP8266((IOT dev board ESP8266))
+    Cloud(Cloud IoT)
 
-
-    DevMachine --- |connected| SerialAdapter
-    SerialAdapter --- |Connected|ESP8266
-    ESP8266 <--> Cloud
+    Browser -.-> |Wi-Fi|ESP8266
+    DevMachine --- |USB| SerialAdapter
+    SerialAdapter --- |3v Serial|ESP8266
     Sensors --> ESP8266
     Buttons --> ESP8266
+    Cloud --> ESP8266
+    ESP8266 --> Cloud
     ESP8266 --> Servos
     ESP8266 --> Relays
 ```
