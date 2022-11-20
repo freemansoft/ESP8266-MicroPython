@@ -2,7 +2,7 @@ import machine
 
 
 def toggle_pin(pinNum, msec, times):
-    '''2: led or 16:relay'''
+    """2: led or 16:relay"""
 
     pin = machine.Pin(pinNum, machine.Pin.OUT)
 
