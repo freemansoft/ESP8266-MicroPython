@@ -15,10 +15,11 @@ graph LR;
     Browser -.-> |Wi-Fi|ESP8266
     DevMachine --- |USB| SerialAdapter
     SerialAdapter --- |3v Serial|ESP8266
+    DevMachine -.-> |OTA|ESP8266
     Sensors --> ESP8266
     Buttons --> ESP8266
-    Cloud --> ESP8266
-    ESP8266 --> Cloud
+    Cloud -.-> ESP8266
+    ESP8266 -.-> Cloud
     ESP8266 --> Servos
     ESP8266 --> Relays
 ```
