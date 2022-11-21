@@ -27,12 +27,20 @@ graph LR;
 # MicroPython
 Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html
 
-# rshell
-This document assumes you use rshell to push and pull changes from your IoT device running micropython
+# Setup
+## Required Hardware 
+1. ESP8266 IoT board or better
+1. Computer with USB port
+1. USB-to-Serial adapter that fits into the computer
+    1. Used an old Prolific, possibly counterfeit, USB-to-3.3V cable on my Mac that showed up as `/dev/cu.usbserial-1140`ls
+    1. Used an old UsbBee on my Windows machine that showed up as `COM6`
+1. 3 wire cable from the adapter to the IoT board
+1. Plug the USB-to-Serial adapter into the computer and into the IoT board.  A COM or serial port should magially appear. If not, you may need to install drivers
 
-The default board name in `rshell` is `pyboard`  This means that `rshell` refers to the IOT device file system as `/pyboard`.
+# Command Line Tools (rshell)
+This document assumes you use rshell to push and pull changes from your IoT device running micropython. The default board name in `rshell` is `pyboard`  This means that `rshell` refers to the IOT device file system as `/pyboard` no matter who made the board.
 
-# Setup 
+# Software Setup 
 1. Install IDE (I use VisualCode)
 1. Install rshell with pip https://pypi.org/project/rshell/
     1. `python3 -m pip install rshell`
@@ -45,7 +53,8 @@ The default board name in `rshell` is `pyboard`  This means that `rshell` refers
     *
     * hostname: The hostname should appear in your DHCP name table.  In my case a `hostname` of `FreemanFrak` became a DNS entry of `freemanfrak.fios-router.home`
 1. rshell
-    1. `connect serial COM6` or whatever your com port is
+    1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
+    1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
 1. rshell
 ``` 
 cp config.py /pyboard
@@ -76,6 +85,11 @@ webclient ->> webserver: request
 webserver ->> webserver: process()
 webserver -->> webclient: done
 ```
+
+# Open Issues
+1. Must manually create config.py and populate with the values.
+1. OTA not enabled.
+1. Portal on first boot to enter network credentials not supported
 
 # Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
