@@ -65,25 +65,42 @@ cp toggle.py /pyboard
 cp webserver.py /pyboard
 ```
 
+# Network Initialization Sequence
+This is the initialization sequence
+
 ```mermaid
 sequenceDiagram
-participant main
-participant config
-participant connectwifi
-participant webserver
-participant network
-participant webclient
+    participant main
+    participant config
+    participant connectwifi
+    participant webserver
+    participant network
 
-main ->> config: loads
-main ->> connectwifi: new()
-main ->> connectwifi: connect
-connectwifi ->> network: dhcp_request
-network -->> connectwifi: IP address
-main ->> webserver: new()
-main ->> webserver: run()
-webclient ->> webserver: request
-webserver ->> webserver: process()
-webserver -->> webclient: done
+    main ->> config: loads
+    main ->> connectwifi: new()
+    main ->> connectwifi: connect
+    connectwifi ->> network: dhcp_request
+    network -->> connectwifi: IP address
+    main ->> webserver: new()
+    main ->> webserver: run()
+    webserver ->> webserver: listen on socket
+```
+
+# Web Request / Response
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant ESP8266
+    participant Relay
+    participant LED
+
+    Browser->>ESP8266: HTTP GET
+    ESP8266->>ESP8266: Talk to Self
+    ESP8266->>LED: Toggle On/Off
+    ESP8266->>Relay: Toggle Open/Close
+    ESP8266-->>Browser: Success 200
+
 ```
 
 # Open Issues
