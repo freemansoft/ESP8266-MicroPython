@@ -77,11 +77,11 @@ sequenceDiagram
     participant network
 
     main ->> config: loads
-    main ->> connectwifi: new()
+    main ->> connectwifi: new(ssid,pasword,hostname)
     main ->> connectwifi: connect
     connectwifi ->> network: dhcp_request
     network -->> connectwifi: IP address
-    main ->> webserver: new()
+    main ->> webserver: new(dev1,dev2)
     main ->> webserver: run()
     webserver ->> webserver: listen on socket
 ```
