@@ -22,8 +22,8 @@ class WebServer(object):
         self.dev2_label = dev2_label
         self.dev2_pin_number = dev2_pin_number
         self.dev2_on_is_high = dev2_on_is_high
-        self.led = machine.Pin(self.dev1_pin_number, machine.Pin.OUT)
-        self.relay = machine.Pin(self.dev2_pin_number, machine.Pin.OUT)
+        self.dev1_pin = machine.Pin(self.dev1_pin_number, machine.Pin.OUT)
+        self.dev2_pin = machine.Pin(self.dev2_pin_number, machine.Pin.OUT)
 
     def _web_page_html(self):
 
@@ -36,13 +36,17 @@ class WebServer(object):
     """
             + """<p><strong>"""
             + self.dev1_label
-            + """</strong></p>
-    <p><a href="/?dev1=on"><button class="button button">ON</button></a><a href="/?dev1=off"><button class="button button2">OFF</button></a></p>
+            + """</strong> Currently: """ +
+            str(bool(self.dev1_pin.value()) == self.dev1_on_is_high)+"""</p>"""
+            + """<p><a href="/?dev1=on"><button class="button button">ON</button></a>"""
+            + """<a href="/?dev1=off"><button class="button button2">OFF</button></a></p>
     """
             + """<p><strong>"""
             + self.dev2_label
-            + """</strong></p>
-    <p><a href="/?dev2=on"><button class="button button">ON</button></a><a href="/?dev2=off"><button class="button button2">OFF</button></a></p>
+            + """</strong> Currently: """ +
+            str(bool(self.dev2_pin.value()) == self.dev2_on_is_high)+"""</p>"""
+            + """<p><a href="/?dev2=on"><button class="button button">ON</button></a>"""
+            + """<a href="/?dev2=off"><button class="button button2">OFF</button></a></p>
     </body></html>"""
         )
         return html
@@ -57,16 +61,16 @@ class WebServer(object):
         # fixed index because content has referrer uri
         if dev1_on == 8:
             print("DEV1 ON: ", dev1_on)
-            self.led.value(int(self.dev1_on_is_high))
+            self.dev1_pin.value(int(self.dev1_on_is_high))
         if dev1_off == 8:
             print("DEV1 OFF: ", dev1_off)
-            self.led.value(int(not self.dev1_on_is_high))
+            self.dev1_pin.value(int(not self.dev1_on_is_high))
         if dev2_on == 8:
             print("DEV2 ON: ", dev2_on)
-            self.relay.value(int(self.dev2_on_is_high))
+            self.dev2_pin.value(int(self.dev2_on_is_high))
         if dev2_off == 8:
             print("DEV2 OFF: ", dev2_off)
-            self.relay.value(int(not self.dev2_on_is_high))
+            self.dev2_pin.value(int(not self.dev2_on_is_high))
 
     def run_server(self):
         """runs the web server"""

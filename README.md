@@ -96,10 +96,12 @@ sequenceDiagram
     participant LED
 
     Browser->>ESP8266: HTTP GET
-    ESP8266->>ESP8266: Talk to Self
-    ESP8266->>LED: Toggle On/Off
-    ESP8266->>Relay: Toggle Open/Close
-    ESP8266-->>Browser: Success 200
+    ESP8266->>ESP8266: Evaluate Query Parameters
+    opt Valid Query Parameters Exist
+        ESP8266->>LED: Toggle On/Off
+        ESP8266->>Relay: Toggle Open/Close
+    end
+    ESP8266-->>Browser: Success 200 and HTML
 
 ```
 
@@ -218,6 +220,10 @@ Reply from 192.168.1.238: bytes=32 time=2ms TTL=255
 Reply from 192.168.1.238: bytes=32 time=2ms TTL=255
 Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
 ```
+
+# Open Issues
+1. There is a trailing / prior to the query parameter start `/?`
+1. The server may suffer from buffer overrun attacks
 
 # References
 Used while initially creating this
