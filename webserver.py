@@ -29,24 +29,26 @@ class WebServer(object):
 
         html = (
             """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="data:,"> <style>html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
+    <link rel="icon" href="data:,"> <style>html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
     h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none; 
     border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-    .button2{background-color: #4286f4;}</style></head><body> <h1>ESP Web Server</h1> 
+    .button2{background-color: #4286f4;}</style>
+    </head>
+    <body> <h1>ESP Web Server</h1> 
     """
             + """<p><strong>"""
             + self.dev1_label
             + """</strong> Currently: """ +
             str(bool(self.dev1_pin.value()) == self.dev1_on_is_high)+"""</p>"""
-            + """<p><a href="/?dev1=on"><button class="button button">ON</button></a>"""
-            + """<a href="/?dev1=off"><button class="button button2">OFF</button></a></p>
+            + """<p><a href="?dev1=on"><button class="button button">ON</button></a>"""
+            + """<a href="?dev1=off"><button class="button button2">OFF</button></a></p>
     """
             + """<p><strong>"""
             + self.dev2_label
             + """</strong> Currently: """ +
             str(bool(self.dev2_pin.value()) == self.dev2_on_is_high)+"""</p>"""
-            + """<p><a href="/?dev2=on"><button class="button button">ON</button></a>"""
-            + """<a href="/?dev2=off"><button class="button button2">OFF</button></a></p>
+            + """<p><a href="?dev2=on"><button class="button button">ON</button></a>"""
+            + """<a href="?dev2=off"><button class="button button2">OFF</button></a></p>
     </body></html>"""
         )
         return html
@@ -59,16 +61,16 @@ class WebServer(object):
         dev2_off = request.find("dev2=off")
 
         # fixed index because content has referrer uri
-        if dev1_on == 8:
+        if dev1_on > 0 and dev1_on < 20:
             print("DEV1 ON: ", dev1_on)
             self.dev1_pin.value(int(self.dev1_on_is_high))
-        if dev1_off == 8:
+        if dev1_off > 0 and dev1_off < 20:
             print("DEV1 OFF: ", dev1_off)
             self.dev1_pin.value(int(not self.dev1_on_is_high))
-        if dev2_on == 8:
+        if dev2_on > 0 and dev2_on < 20:
             print("DEV2 ON: ", dev2_on)
             self.dev2_pin.value(int(self.dev2_on_is_high))
-        if dev2_off == 8:
+        if dev2_off > 0 and dev2_off < 20:
             print("DEV2 OFF: ", dev2_off)
             self.dev2_pin.value(int(not self.dev2_on_is_high))
 
