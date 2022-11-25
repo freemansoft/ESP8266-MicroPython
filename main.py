@@ -1,4 +1,5 @@
-from config import ssid, password, hostname
+from config import wifi_ssid, wifi_password, hostname
+from config import web_repl_password
 """ copies of the variables"""
 from connectwifi import WIFI
 from webserver import WebServer
@@ -9,7 +10,7 @@ from httpget import http_get_print
 def main():
     """lets us test main() without board reset"""
     toggle_pin(2, 200, 2)
-    conn = WIFI(ssid, password, hostname)
+    conn = WIFI(wifi_ssid, wifi_password, hostname)
     conn.do_connect()
     # http_get_print("http://micropython.org/ks/test.html")
     toggle_pin(2, 200, 2)

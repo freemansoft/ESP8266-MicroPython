@@ -77,7 +77,7 @@ sequenceDiagram
     participant network
 
     main ->> config: loads
-    main ->> connectwifi: new(ssid,pasword,hostname)
+    main ->> connectwifi: new(wifi_ssid,pasword,hostname)
     main ->> connectwifi: connect
     connectwifi ->> network: dhcp_request
     network -->> connectwifi: IP address
@@ -121,9 +121,9 @@ repl
 ```
 Connect to local wifi with
 ```
-from config import ssid, password
+from config import wifi_ssid, wifi_password
 from connectwifi import WIFI
-conn = WIFI(ssid, password, hostname)
+conn = WIFI(wifi_ssid, wifi_password, hostname)
 conn.do_connect()
 ```
 Now flash the lights
