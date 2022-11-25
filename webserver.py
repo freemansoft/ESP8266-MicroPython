@@ -55,10 +55,10 @@ class WebServer(object):
 
     def _handle_request(self, request):
 
-        dev1_on = request.find("dev1=on")
-        dev1_off = request.find("dev1=off")
-        dev2_on = request.find("dev2=on")
-        dev2_off = request.find("dev2=off")
+        dev1_on = request.find("?dev1=on")
+        dev1_off = request.find("?dev1=off")
+        dev2_on = request.find("?dev2=on")
+        dev2_off = request.find("?dev2=off")
 
         # fixed index because content has referrer uri
         if dev1_on > 0 and dev1_on < 20:
@@ -87,7 +87,7 @@ class WebServer(object):
                 conn.settimeout(3.0)
                 print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024)
-                request = str(request)
+                request = request.decode("utf-8")
                 print("Content = %s" % request)
 
                 self._handle_request(request)
