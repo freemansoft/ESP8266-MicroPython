@@ -37,10 +37,10 @@ Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/
 1. 3 wire cable from the adapter to the IoT board
 1. Plug the USB-to-Serial adapter into the computer and into the IoT board.  A COM or serial port should magially appear. If not, you may need to install drivers
 
-# Command Line Tools (rshell)
+## Command Line Tools (rshell)
 This document assumes you use rshell to push and pull changes from your IoT device running micropython. The default board name in `rshell` is `pyboard`  This means that `rshell` refers to the IOT device file system as `/pyboard` no matter who made the board.
 
-# Software Setup 
+## Software Setup 
 1. Install IDE (I use VisualCode)
 1. Install rshell with pip https://pypi.org/project/rshell/
     1. `python3 -m pip install rshell`
@@ -64,6 +64,20 @@ cp main.py /pyboard
 cp toggle.py /pyboard
 cp webserver.py /pyboard
 ```
+# Web Server
+The device will actually bring up two different networks and have two different addresses if you provid valid `SSID` and `Password` for the local network.
+
+## Joining your network in Station
+This program attempts to join the network specified in the config.py file. It will a acquire a DHCP issued IP address and log that to the console. This network must be successfully configured and joined in order to have internet access.
+
+In some networks the board will be registered and reachable as `<hostname>.local`. _This worked fine for me with a Verizon FIOS router_.  Other routers don't pick this up and you have to connect by IP address. 
+
+## AP Mode
+MicroPython starts a network in Access Point (AP) mode. This means the IoT device actually hosts its own private network with no internet connectivity.
+
+1. The ESP8266 IoT board has its own access point named `MicroPyton-<serial>`. 
+1. You can join the AP network with password `micropythoN` 
+1. Then connect to the project web server with a browser at `192.168.4.1`. 
 
 # Network Initialization Sequence
 This is the initialization sequence

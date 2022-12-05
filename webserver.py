@@ -24,6 +24,7 @@ class WebServer(object):
         self.dev2_on_is_high = dev2_on_is_high
         self.dev1_pin = machine.Pin(self.dev1_pin_number, machine.Pin.OUT)
         self.dev2_pin = machine.Pin(self.dev2_pin_number, machine.Pin.OUT)
+        self.pins = [machine.Pin(i) for i in (0, 2, 4, 5, 12, 13, 14, 15, 16)]
 
     def _web_page_html(self):
 
@@ -35,17 +36,25 @@ class WebServer(object):
     .button2{background-color: #4286f4;}</style>
     </head>
     <body> 
-    <h1>ESP Web Server</h1> 
+    <h1>ESP Controls</h1> 
     <p><strong>%s</strong> Currently: %s</p>
     <p><a href="?dev1=on"><button class="button button">ON</button></a>
         <a href="?dev1=off"><button class="button button2">OFF</button></a></p>
     <p><strong>%s</strong> Currently: %s</p>
     <p><a href="?dev2=on"><button class="button button">ON</button></a>
         <a href="?dev2=off"><button class="button button2">OFF</button></a></p>
+    <p></p>
+    <h1>ESP Pin Raw State</h1> 
+    %s
     </body></html>"""
         )
+        rows = ['<p><strong>%s</strong>: %s</p>' %
+                (str(p), p.value()) for p in self.pins]
+
         return html % (self.dev1_label, str(bool(self.dev1_pin.value()) == self.dev1_on_is_high),
-                       self.dev2_label, str(bool(self.dev2_pin.value()) == self.dev2_on_is_high))
+                       self.dev2_label, str(
+                           bool(self.dev2_pin.value()) == self.dev2_on_is_high),
+                       '\n'.join(rows))
 
     def _handle_request(self, request):
 
