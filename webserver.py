@@ -30,10 +30,15 @@ class WebServer(object):
 
         html = (
             """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="data:,"> <style>html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
-    h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none; 
-    border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-    .button2{background-color: #4286f4;}</style>
+    <link rel="icon" href="data:,"> <style>
+    html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
+    h1{color: #0F3376; padding: 2vh;}
+    p{font-size: 1.5rem;}
+    .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
+    .button2{background-color: #4286f4;} 
+    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;}
+    tr {border-bottom: 1px solid #ddd; font-size: 1.5rem;}
+    </style>
     </head>
     <body> 
     <h1>ESP Controls</h1> 
@@ -45,16 +50,20 @@ class WebServer(object):
         <a href="?dev2=off"><button class="button button2">OFF</button></a></p>
     <p></p>
     <h1>ESP Pin Raw State</h1> 
-    %s
+    <table><tr><th>pin</th> %s </tr><tr><th>value</th > %s </tr></table>
     </body></html>"""
         )
-        rows = ['<p><strong>%s</strong>: %s</p>' %
-                (str(p), p.value()) for p in self.pins]
+        row_pin_number = '\n'.join(
+            ['<td> %s </td>' % (str(p)) for p in self.pins])
+        row_pin_state = '\n'.join(
+            ['<td> %s </td>' % (str(p.value())) for p in self.pins])
 
+        print(row_pin_number, '\n', row_pin_state)
         return html % (self.dev1_label, str(bool(self.dev1_pin.value()) == self.dev1_on_is_high),
                        self.dev2_label, str(
                            bool(self.dev2_pin.value()) == self.dev2_on_is_high),
-                       '\n'.join(rows))
+                       row_pin_number, row_pin_state
+                       )
 
     def _handle_request(self, request):
 
