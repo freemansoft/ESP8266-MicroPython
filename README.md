@@ -239,10 +239,11 @@ MicroPython
 * https://blog.miguelgrinberg.com/post/micropython-and-the-internet-of-things-part-iii-building-a-micropython-application
 * https://techtutorialsx.com/2017/06/06/esp32-esp8266-micropython-automatic-connection-to-wifi/
 
-Web Server Examples based on the same core
+Web Server Examples some based on the same core
 * https://randomnerdtutorials.com/esp32-esp8266-micropython-web-server/
 * https://randomnerdtutorials.com/micropython-esp32-esp8266-vs-code-pymakr/ Web server that handles GET query parameters
 * https://microcontrollerslab.com/esp32-esp8266-micropython-web-server/ Web server that handles GET requests
+* https://github.com/micropython/micropython/blob/master/docs/esp8266/tutorial/network_tcp.rst
 
 rshell
 * https://github.com/dhylands/rshell

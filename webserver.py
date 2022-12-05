@@ -34,24 +34,18 @@ class WebServer(object):
     border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
     .button2{background-color: #4286f4;}</style>
     </head>
-    <body> <h1>ESP Web Server</h1> 
-    """
-            + """<p><strong>"""
-            + self.dev1_label
-            + """</strong> Currently: """ +
-            str(bool(self.dev1_pin.value()) == self.dev1_on_is_high)+"""</p>"""
-            + """<p><a href="?dev1=on"><button class="button button">ON</button></a>"""
-            + """<a href="?dev1=off"><button class="button button2">OFF</button></a></p>
-    """
-            + """<p><strong>"""
-            + self.dev2_label
-            + """</strong> Currently: """ +
-            str(bool(self.dev2_pin.value()) == self.dev2_on_is_high)+"""</p>"""
-            + """<p><a href="?dev2=on"><button class="button button">ON</button></a>"""
-            + """<a href="?dev2=off"><button class="button button2">OFF</button></a></p>
+    <body> 
+    <h1>ESP Web Server</h1> 
+    <p><strong>%s</strong> Currently: %s</p>
+    <p><a href="?dev1=on"><button class="button button">ON</button></a>
+        <a href="?dev1=off"><button class="button button2">OFF</button></a></p>
+    <p><strong>%s</strong> Currently: %s</p>
+    <p><a href="?dev2=on"><button class="button button">ON</button></a>
+        <a href="?dev2=off"><button class="button button2">OFF</button></a></p>
     </body></html>"""
         )
-        return html
+        return html % (self.dev1_label, str(bool(self.dev1_pin.value()) == self.dev1_on_is_high),
+                       self.dev2_label, str(bool(self.dev2_pin.value()) == self.dev2_on_is_high))
 
     def _handle_request(self, request):
 
@@ -98,7 +92,8 @@ class WebServer(object):
                 conn.send("Connection: close\n\n")
                 conn.sendall(response)
                 conn.close()
-                # print('Connection closed')
+                print('Connection closed')
         except OSError as e:
             conn.close()
-            print("Connection closed on error")
+            print("Connection closed on error " + str(e.errno))
+            raise
