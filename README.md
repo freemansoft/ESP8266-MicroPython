@@ -48,13 +48,18 @@ This document assumes you use rshell to push and pull changes from your IoT devi
         * The message probably says something like _is installed in &lt;some path&gt; which is not on PATH_ and _Consider adding this diretory to PATH_
         * Mine Windows 10 path was `C:\Users\joe\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts`
 1. Clone this repo
-1. Copy `config-template.py.template` to `config.py` and put your values into `config.py`
-    * 
-    *
-    * hostname: The hostname should appear in your DHCP name table.  In my case a `hostname` of `FreemanFrak` became a DNS entry of `freemanfrak.fios-router.home`
-1. rshell
-    1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
-    1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
+1. Copy `config-template.py.template` to `config.py` and put your `ssid`, `password` and `hostname` values into `config.py`
+    * `wifi_ssid` and `wifi_password` must be provided in the configuration file to join the local network.  The program currently fails if it can't join the network.
+    * hostname: The hostname can appear in your DHCP name table after the device joins the network if your router supports that.  
+        * In my case a `hostname` of `FreemanFrak` became a DNS entry of `freemanfrak.fios-router.home`
+        * I have also seen `FreemanFrak.local`
+1. rshell: Run `rshell`
+    1. With the port on the command line
+        1. Windows Style: `rshell -p COM6`
+        1. Mac Style: `rshell -p /dev/cu.usbserial-1140`
+    1. Specifying the port after starting `rshell`
+        1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
+        1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
 1. rshell
 ``` 
 cp config.py /pyboard
