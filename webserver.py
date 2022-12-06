@@ -92,8 +92,13 @@ class WebServer(object):
         s.listen(5)
         try:
             while True:
-                if gc.mem_free() < 102000:
+                # emperical number for ESP8266
+                if gc.mem_free() < 20000:
+                    print("pre-free used:"+str(gc.mem_alloc()) +
+                          " free:"+str(gc.mem_free()))
                     gc.collect()
+                    print("post-free used:"+str(gc.mem_alloc()) +
+                          " free:"+str(gc.mem_free()))
                 conn, addr = s.accept()
                 conn.settimeout(3.0)
                 print("Got a connection from %s" % str(addr))
@@ -109,7 +114,8 @@ class WebServer(object):
                 conn.send("Connection: close\n\n")
                 conn.sendall(response)
                 conn.close()
-                print('Connection closed')
+                print('Connection closed used:'+str(gc.mem_alloc()) +
+                      ' free:'+str(gc.mem_free()))
         except OSError as e:
             conn.close()
             print("Connection closed on error " + str(e.errno))
