@@ -36,8 +36,7 @@ class WebServer(object):
     p{font-size: 1.5rem;}
     .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
     .button2{background-color: #4286f4;} 
-    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;}
-    tr {border-bottom: 1px solid #ddd; font-size: 1.5rem;}
+    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;} tr {border-bottom: 1px solid #ddd; font-size: 1.5rem;} td { padding: 10px;}
     </style>
     </head>
     <body> 
@@ -50,15 +49,15 @@ class WebServer(object):
         <a href="?dev2=off"><button class="button button2">OFF</button></a></p>
     <p></p>
     <h1>ESP Pin Raw State</h1> 
-    <table><tr><th>pin</th> %s </tr><tr><th>value</th > %s </tr></table>
+    <table><tr><th>Pin</th> %s </tr><tr><th>State</th > %s </tr></table>
     </body></html>"""
         )
-        row_pin_number = '\n'.join(
+        row_pin_number = ''.join(
             ['<td> %s </td>' % (str(p)) for p in self.pins])
-        row_pin_state = '\n'.join(
+        row_pin_state = ''.join(
             ['<td> %s </td>' % (str(p.value())) for p in self.pins])
 
-        print(row_pin_number, '\n', row_pin_state)
+        #print(row_pin_number, '\n', row_pin_state)
         return html % (self.dev1_label, str(bool(self.dev1_pin.value()) == self.dev1_on_is_high),
                        self.dev2_label, str(
                            bool(self.dev2_pin.value()) == self.dev2_on_is_high),
