@@ -63,10 +63,10 @@ This document assumes you use rshell to push and pull changes from your IoT devi
 1. Edit `main.py` to customize the pins the web server will display.  A sample from the code 12/2022 is as follows
     ```
     server = WebServer(
-            [2, 16],
-            ["LED (Pin 2)", "RELAY (Pin 16)"],
-            [False, True],
-            [0, 2, 4, 5, 12, 13, 14, 15, 16]
+        [machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],
+        ["LED (Pin 2)", "RELAY (Pin 16)"],
+        [False, True],
+        [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
     )
     ```
 1. rshell

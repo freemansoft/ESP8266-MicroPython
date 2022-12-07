@@ -9,17 +9,15 @@ class WebServer(object):
 
     def __init__(
         self,
-        control_pin_nums,
+        control_pins,
         control_pin_labels,
         control_pin_on_high,
-        monitor_pin_nums,
+        monitor_pins,
     ):
+        self.control_pins = control_pins
         self.control_pin_labels = control_pin_labels
         self.control_pin_on_high = control_pin_on_high
-        self.control_pin_nums = control_pin_nums
-        self.control_pins = [machine.Pin(i, machine.Pin.OUT)
-                             for i in control_pin_nums]
-        self.pins_to_monitor = [machine.Pin(i) for i in monitor_pin_nums]
+        self.pins_to_monitor = monitor_pins
 
     def _web_page_html(self):
 
@@ -44,8 +42,8 @@ class WebServer(object):
         )
         control_pin_state = ''.join(
             ['<p><strong>%s</strong> Currently On: %s</p> <p><a href="?dev_%s=on"><button class="button button">ON</button></a><a href="?dev_%s=off"><button class="button button2">OFF</button></a></p>'
-             % (pin_label, str(bool(self.control_pins[p].value()) == self.control_pin_on_high[p]), str(p), str(p))
-             for p, pin_label in enumerate(self.control_pin_labels)]
+             % (pin_label, str(bool(control_pin.value()) == control_pin_on_high), str(p), str(p))
+             for p, (pin_label, control_pin, control_pin_on_high) in enumerate(zip(self.control_pin_labels, self.control_pins, self.control_pin_on_high))]
         )
         # labels and values on own rows
         monitor_pin_number = ''.join(
@@ -60,16 +58,19 @@ class WebServer(object):
 
         # first line is request - ignore the headers and referrer
         line_get = request.split("\r")[0]
-        # should we verify it is a GET?
-        for p, control_pin in enumerate(self.control_pins):
-            dev_on = line_get.find("dev_"+str(p)+"=on")
-            dev_off = line_get.find("dev_"+str(p)+"=off")
-            if dev_on > 0:
-                #print("DEV ", p, " ON: ", dev_on)
-                control_pin.value(int(self.control_pin_on_high[p]))
-            if dev_off > 0:
-                #print("DEV ", p, " OFF: ", dev_off)
-                control_pin.value(int(not self.control_pin_on_high[p]))
+        if (line_get.startswith("GET")):
+            # iterate across control pins to see if any were updated
+            for p, control_pin in enumerate(self.control_pins):
+                dev_on = line_get.find("dev_"+str(p)+"=on")
+                dev_off = line_get.find("dev_"+str(p)+"=off")
+                if dev_on > 0:
+                    #print("DEV ", p, " ON: ", dev_on)
+                    control_pin.value(int(self.control_pin_on_high[p]))
+                if dev_off > 0:
+                    #print("DEV ", p, " OFF: ", dev_off)
+                    control_pin.value(int(not self.control_pin_on_high[p]))
+        else:
+            print("HTTP GET Only.  Ignoring: %s" % line_get)
 
     def run_server(self):
         """runs the web server"""
