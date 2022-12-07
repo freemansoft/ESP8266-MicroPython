@@ -60,15 +60,24 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     1. Specifying the port after starting `rshell`
         1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
         1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
+1. Edit `main.py` to customize the pins the web server will display.  A sample from the code 12/2022 is as follows
+    ```
+    server = WebServer(
+            [2, 16],
+            ["LED (Pin 2)", "RELAY (Pin 16)"],
+            [False, True],
+            [0, 2, 4, 5, 12, 13, 14, 15, 16]
+    )
+    ```
 1. rshell
-``` 
-cp config.py /pyboard
-cp connectwifi.py /pyboard
-cp httpget.py /pyboard
-cp main.py /pyboard
-cp toggle.py /pyboard
-cp webserver.py /pyboard
-```
+    ``` 
+    cp config.py /pyboard
+    cp connectwifi.py /pyboard
+    cp httpget.py /pyboard
+    cp main.py /pyboard
+    cp toggle.py /pyboard
+    cp webserver.py /pyboard
+    ```
 # Web Server
 The device will actually bring up two different networks and have two different addresses if you provid valid `SSID` and `Password` for the local network.
 

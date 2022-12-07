@@ -106,4 +106,5 @@ class WebServer(object):
         except OSError as e:
             conn.close()
             print("Connection closed on error " + str(e.errno))
-            raise
+            pass
+            # raise
