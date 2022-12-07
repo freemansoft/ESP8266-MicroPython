@@ -100,7 +100,7 @@ sequenceDiagram
     main ->> connectwifi: connect
     connectwifi ->> network: dhcp_request
     network -->> connectwifi: IP address
-    main ->> webserver: new(dev1,dev2)
+    main ->> webserver: new(control_pin_nums,control_pin_labels,control_pin_on_high,monitor_pin_nums)
     main ->> webserver: run()
     webserver ->> webserver: listen on socket
 ```

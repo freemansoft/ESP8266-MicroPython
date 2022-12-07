@@ -15,7 +15,12 @@ def main():
     # http_get_print("http://micropython.org/ks/test.html")
     toggle_pin(2, 200, 2)
 
-    server = WebServer("LED (Pin 2)", 2, False, "RELAY (Pin 16)", 16, True)
+    server = WebServer(
+        [2, 16],
+        ["LED (Pin 2)", "RELAY (Pin 16)"],
+        [False, True],
+        [0, 2, 4, 5, 12, 13, 14, 15, 16]
+    )
     server.run_server()
 
 

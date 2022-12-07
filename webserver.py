@@ -5,26 +5,21 @@ import gc
 
 
 class WebServer(object):
-    """webserver that can change output pins"""
+    """webserver that can change output pins and display current pin state"""
 
     def __init__(
         self,
-        dev1_label,
-        dev1_pin_number,
-        dev1_on_is_high,
-        dev2_label,
-        dev2_pin_number,
-        dev2_on_is_high,
+        control_pin_nums,
+        control_pin_labels,
+        control_pin_on_high,
+        monitor_pin_nums,
     ):
-        self.dev1_label = dev1_label
-        self.dev1_pin_number = dev1_pin_number
-        self.dev1_on_is_high = dev1_on_is_high
-        self.dev2_label = dev2_label
-        self.dev2_pin_number = dev2_pin_number
-        self.dev2_on_is_high = dev2_on_is_high
-        self.dev1_pin = machine.Pin(self.dev1_pin_number, machine.Pin.OUT)
-        self.dev2_pin = machine.Pin(self.dev2_pin_number, machine.Pin.OUT)
-        self.pins = [machine.Pin(i) for i in (0, 2, 4, 5, 12, 13, 14, 15, 16)]
+        self.control_pin_labels = control_pin_labels
+        self.control_pin_on_high = control_pin_on_high
+        self.control_pin_nums = control_pin_nums
+        self.control_pins = [machine.Pin(i, machine.Pin.OUT)
+                             for i in control_pin_nums]
+        self.pins_to_monitor = [machine.Pin(i) for i in monitor_pin_nums]
 
     def _web_page_html(self):
 
@@ -41,49 +36,40 @@ class WebServer(object):
     </head>
     <body> 
     <h1>ESP Controls</h1> 
-    <p><strong>%s</strong> Currently: %s</p>
-    <p><a href="?dev1=on"><button class="button button">ON</button></a>
-        <a href="?dev1=off"><button class="button button2">OFF</button></a></p>
-    <p><strong>%s</strong> Currently: %s</p>
-    <p><a href="?dev2=on"><button class="button button">ON</button></a>
-        <a href="?dev2=off"><button class="button button2">OFF</button></a></p>
-    <p></p>
+    %s
+    <p>Current state takes into account pin inversion</p>
     <h1>ESP Pin Raw State</h1> 
-    <table><tr><th>Pin</th> %s </tr><tr><th>State</th > %s </tr></table>
+    <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     </body></html>"""
         )
-        row_pin_number = ''.join(
-            ['<td> %s </td>' % (str(p)) for p in self.pins])
-        row_pin_state = ''.join(
-            ['<td> %s </td>' % (str(p.value())) for p in self.pins])
+        control_pin_state = ''.join(
+            ['<p><strong>%s</strong> Currently On: %s</p> <p><a href="?dev_%s=on"><button class="button button">ON</button></a><a href="?dev_%s=off"><button class="button button2">OFF</button></a></p>'
+             % (pin_label, str(bool(self.control_pins[p].value()) == self.control_pin_on_high[p]), str(p), str(p))
+             for p, pin_label in enumerate(self.control_pin_labels)]
+        )
+        # labels and values on own rows
+        monitor_pin_number = ''.join(
+            ['<td> %s </td>' % (str(p)) for p in self.pins_to_monitor])
+        monitor_pin_state = ''.join(
+            ['<td> %s </td>' % (str(p.value())) for p in self.pins_to_monitor])
 
-        #print(row_pin_number, '\n', row_pin_state)
-        return html % (self.dev1_label, str(bool(self.dev1_pin.value()) == self.dev1_on_is_high),
-                       self.dev2_label, str(
-                           bool(self.dev2_pin.value()) == self.dev2_on_is_high),
-                       row_pin_number, row_pin_state
-                       )
+        #print(monitor_pin_number, '\n', monitor_pin_state)
+        return html % (control_pin_state, monitor_pin_number, monitor_pin_state)
 
     def _handle_request(self, request):
 
-        dev1_on = request.find("?dev1=on")
-        dev1_off = request.find("?dev1=off")
-        dev2_on = request.find("?dev2=on")
-        dev2_off = request.find("?dev2=off")
-
-        # fixed index because content has referrer uri
-        if dev1_on > 0 and dev1_on < 20:
-            print("DEV1 ON: ", dev1_on)
-            self.dev1_pin.value(int(self.dev1_on_is_high))
-        if dev1_off > 0 and dev1_off < 20:
-            print("DEV1 OFF: ", dev1_off)
-            self.dev1_pin.value(int(not self.dev1_on_is_high))
-        if dev2_on > 0 and dev2_on < 20:
-            print("DEV2 ON: ", dev2_on)
-            self.dev2_pin.value(int(self.dev2_on_is_high))
-        if dev2_off > 0 and dev2_off < 20:
-            print("DEV2 OFF: ", dev2_off)
-            self.dev2_pin.value(int(not self.dev2_on_is_high))
+        # first line is request - ignore the headers and referrer
+        line_get = request.split("\r")[0]
+        # should we verify it is a GET?
+        for p, control_pin in enumerate(self.control_pins):
+            dev_on = line_get.find("dev_"+str(p)+"=on")
+            dev_off = line_get.find("dev_"+str(p)+"=off")
+            if dev_on > 0:
+                #print("DEV ", p, " ON: ", dev_on)
+                control_pin.value(int(self.control_pin_on_high[p]))
+            if dev_off > 0:
+                #print("DEV ", p, " OFF: ", dev_off)
+                control_pin.value(int(not self.control_pin_on_high[p]))
 
     def run_server(self):
         """runs the web server"""
@@ -104,7 +90,8 @@ class WebServer(object):
                 print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024)
                 request = request.decode("utf-8")
-                print("Content = %s" % request)
+                print("Request Bytes:%d Content:\n%s" %
+                      (len(request), request))
 
                 self._handle_request(request)
 
