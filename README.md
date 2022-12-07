@@ -281,3 +281,5 @@ Other : Wemos D1 cause that is compatible with the board I tested with.
 * https://www.instructables.com/MicroPython-IoT-Rover-Based-on-WeMos-D1-ESP-8266EX/
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/index.html
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/setup.html
+* https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/
+* https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
