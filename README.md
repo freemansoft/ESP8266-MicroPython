@@ -60,7 +60,7 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     1. Specifying the port after starting `rshell`
         1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
         1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
-1. Edit `main.py` to customize the pins the web server will display.  A sample from the code 12/2022 is as follows
+1. Edit `main.py` to customize the device pins the web server will display.  A sample from the code 12/2022 is as follows
     ```
     server = WebServer(
         [machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],
@@ -79,11 +79,15 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp webserver.py /pyboard
     ```
 
-# Running the server
-| Environment | Command |
+# Running and testing the web server.
+Most people will just run the server on their device per the instructions above
+
+This repository also contains a test jig that lets you run the server on your local development machine.  It currently only supports basic output pins and logs the operations it runs.  
+
+| Execution Environment | Steps |
 | - | - |
 | Iot Device | Copy the files and restart the device|
-| development machine like a mac | Run `pytest -s` to start a server and see log output.  Press `ctrl-c` to exit the test.
+| Development machine like a mac | Run `pytest -s` to start a server and see log output.  Press `ctrl-c` to exit the test.
 
 # Web Server
 The device will actually bring up two different networks and have two different addresses if you provid valid `SSID` and `Password` for the local network.
