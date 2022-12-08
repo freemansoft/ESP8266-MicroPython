@@ -1,6 +1,5 @@
 # Complete project details at https://RandomNerdTutorials.com
 import socket
-import machine
 import gc
 
 
@@ -64,10 +63,10 @@ class WebServer(object):
                 dev_on = line_get.find("dev_"+str(p)+"=on")
                 dev_off = line_get.find("dev_"+str(p)+"=off")
                 if dev_on > 0:
-                    #print("DEV ", p, " ON: ", dev_on)
+                    print("DEV ", p, " ON: ", dev_on)
                     control_pin.value(int(self.control_pin_on_high[p]))
                 if dev_off > 0:
-                    #print("DEV ", p, " OFF: ", dev_off)
+                    print("DEV ", p, " OFF: ", dev_off)
                     control_pin.value(int(not self.control_pin_on_high[p]))
         else:
             print("HTTP GET Only.  Ignoring: %s" % line_get)
@@ -80,12 +79,15 @@ class WebServer(object):
         try:
             while True:
                 # emperical number for ESP8266
-                if gc.mem_free() < 20000:
-                    print("pre-free used:"+str(gc.mem_alloc()) +
-                          " free:"+str(gc.mem_free()))
-                    gc.collect()
-                    print("post-free used:"+str(gc.mem_alloc()) +
-                          " free:"+str(gc.mem_free()))
+                try:
+                    if gc.mem_free() < 20000:
+                        print("pre-free used:"+str(gc.mem_alloc()) +
+                              " free:"+str(gc.mem_free()))
+                        gc.collect()
+                        print("post-free used:"+str(gc.mem_alloc()) +
+                              " free:"+str(gc.mem_free()))
+                except AttributeError:
+                    print("no memfree in this version of python")
                 conn, addr = s.accept()
                 conn.settimeout(3.0)
                 print("Got a connection from %s" % str(addr))
@@ -97,13 +99,17 @@ class WebServer(object):
                 self._handle_request(request)
 
                 response = self._web_page_html()
-                conn.send("HTTP/1.1 200 OK\n")
-                conn.send("Content-Type: text/html\n")
-                conn.send("Connection: close\n\n")
-                conn.sendall(response)
+                conn.send("HTTP/1.1 200 OK\n".encode())
+                conn.send("Content-Type: text/html\n".encode())
+                conn.send("Connection: close\n\n".encode())
+                conn.sendall(response.encode())
                 conn.close()
-                print('Connection closed used:'+str(gc.mem_alloc()) +
-                      ' free:'+str(gc.mem_free()))
+                print('Connection closed ')
+                try:
+                    print('used:'+str(gc.mem_alloc()) +
+                          ' free:'+str(gc.mem_free()))
+                except AttributeError:
+                    pass
         except OSError as e:
             conn.close()
             print("Connection closed on error " + str(e.errno))

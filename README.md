@@ -78,6 +78,13 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp toggle.py /pyboard
     cp webserver.py /pyboard
     ```
+
+# Running the server
+| Environment | Command |
+| - | - |
+| Iot Device | Copy the files and restart the device|
+| development machine like a mac | Run `pytest -s` to start a server and see log output.  Press `ctrl-c` to exit the test.
+
 # Web Server
 The device will actually bring up two different networks and have two different addresses if you provid valid `SSID` and `Password` for the local network.
 
