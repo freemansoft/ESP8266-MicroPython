@@ -57,16 +57,20 @@ class WebServer(object):
 
         # first line is request - ignore the headers and referrer
         line_get = request.split("\r")[0]
+        print('Request Processing: %s' % (line_get))
         if (line_get.startswith("GET")):
             # iterate across control pins to see if any were updated
             for p, control_pin in enumerate(self.control_pins):
                 dev_on = line_get.find("dev_"+str(p)+"=on")
                 dev_off = line_get.find("dev_"+str(p)+"=off")
                 if dev_on > 0:
-                    print("DEV ", p, " ON: ", dev_on)
+                    print("dev_%s %s Pos:%s On" %
+                          (str(p), self.control_pins[p], str(dev_on)))
                     control_pin.value(int(self.control_pin_on_high[p]))
+
                 if dev_off > 0:
-                    print("DEV ", p, " OFF: ", dev_off)
+                    print("dev_%s %s Pos:%s Off" %
+                          (str(p), self.control_pins[p], str(dev_off)))
                     control_pin.value(int(not self.control_pin_on_high[p]))
         else:
             print("HTTP GET Only.  Ignoring: %s" % line_get)
@@ -93,8 +97,8 @@ class WebServer(object):
                 print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024)
                 request = request.decode("utf-8")
-                print("Request Bytes:%d Content:\n%s" %
-                      (len(request), request))
+                print("Request Bytes:%d " % (len(request)))
+                #print("Request Content:\n%s" % (request))
 
                 self._handle_request(request)
 

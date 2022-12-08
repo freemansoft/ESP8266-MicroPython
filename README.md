@@ -141,6 +141,7 @@ sequenceDiagram
 ```
 
 # Open Issues
+1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
 1. Must manually create config.py and populate with the values.
 1. OTA not enabled.
 1. Portal on first boot to enter network credentials not supported
@@ -148,49 +149,63 @@ sequenceDiagram
 # Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
 1. Correctly configured config.py
-1. Pushed the files to the ESP8266 as specified above
+1. Copied the files to the ESP8266 as specified above
 
-Enter the REPL from `rshell` with 
-```
-repl
-```
-Connect to local wifi with
-```
-from config import wifi_ssid, wifi_password
-from connectwifi import WIFI
-conn = WIFI(wifi_ssid, wifi_password, hostname)
-conn.do_connect()
-```
-Now flash the lights
-```
-from toggle import toggle_pin
-toggle_pin(2,1000,10)
-```
-Make a web request to a remote server
-```
-from httpget import http_get_print
-http_get_print("http://micropython.org/ks/test.html")
-```
-Start up a web page and hit the IP address from your browser
-```
-from webserver import WebServer
-server = WebServer("LED",2, False, "Relay", 16, True)
-server.run_server()
-```
+## If you're using rshell
+1. Start `rshell` or whatever command line interace you are using
+    ```
+    rshell -p <your-serial-port>
+    ```
+1. Enter the REPL from `rshell` with 
+    ```
+    repl
+    ```
 
-Do all of this by running main()
-```
-from main import main
-main()
-```
-Terminate the MicroPython program
-```
-ctrl-c
-```
-Exit the REPL with
-```
-ctrl-x
-```
+## The easy way
+This assumes you are at the REPL prompt
+
+1. Run `main()`
+    ```
+    from main import main
+    main()
+    ```
+1. Use a web browser to connect to the web page at the address shown.
+1. Terminate the MicroPython program - if you want to play more with the REPL
+    ```
+    ctrl-c
+    ```
+1. Exit the REPL with
+    ```
+    ctrl-x
+    ```
+
+## The long way
+Basically we are running main() line by line
+
+1. Connect to local wifi with
+    ```
+    from config import wifi_ssid, wifi_password
+    from connectwifi import WIFI
+    conn = WIFI(wifi_ssid, wifi_password, hostname)
+    conn.do_connect()
+    ```
+1. Now flash the lights
+    ```
+    from toggle import toggle_pin
+    toggle_pin(2,1000,10)
+    ```
+1. Make a web request to a remote server
+    ```
+    from httpget import http_get_print
+    http_get_print("http://micropython.org/ks/test.html")
+    ```
+1. Start up a web page and hit the IP address from your browser
+    ```
+    from webserver import WebServer
+    server = WebServer([machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],["LED (Pin 2)", "RELAY (Pin 16)"],[False, True],[machine.Pin(i) for i in [2, 16]])
+    server.run_server()
+    ```
+
 
 ## Restart the board to run boot() and main()
 
@@ -288,5 +303,10 @@ Other : Wemos D1 cause that is compatible with the board I tested with.
 * https://www.instructables.com/MicroPython-IoT-Rover-Based-on-WeMos-D1-ESP-8266EX/
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/index.html
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/setup.html
+Other: General
 * https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
+* https://github.com/pvanallen/esp32-getstarted/blob/master/docs/servo.md
+* https://github.com/pvanallen/esp32-getstarted/blob/master/examples/servo.py
+* https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
+

@@ -11,9 +11,9 @@ from unittest import TestCase
 
 
 def test_run_server():
-    pin1 = FakePin(0)
-    pin2 = FakePin(0)
-    pin3 = FakePin(1)
+    pin1 = FakePin(2)
+    pin2 = FakePin(5)
+    pin3 = FakePin(16)
     pins = [pin1, pin3]
     labels = ["LED (Pin 2)", "RELAY (Pin 16)"]
     inversion = [False, True]
