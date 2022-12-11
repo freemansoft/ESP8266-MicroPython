@@ -84,6 +84,31 @@ Most people will just run the server on their device per the instructions above
 
 This repository also contains a test jig that lets you run the server on your local development machine.  It currently only supports basic output pins and logs the operations it runs.  
 
+```mermaid
+graph LR;
+    subgraph ecosystem
+        subgraph Developer-Machine
+            webserver_test.py
+            WebServer-Dev[WebServer]
+            FakePin
+        end
+        subgraph ESP8266
+            main.py
+            WebServer-ESP[WebServer]
+            Pin
+        end
+    end
+
+    webserver_test.py -.->|Instantiate|FakePin
+    webserver_test.py -.->|Instantiate|WebServer-Dev
+    webserver_test.py --> |"Execute(FakePin)"|WebServer-Dev
+
+    main.py -.->|Instantiate| Pin
+    main.py -.->|Instantiate| WebServer-ESP
+    main.py --> |"Execute(Pin)"| WebServer-ESP
+
+```
+
 | Execution Environment | Steps |
 | - | - |
 | Iot Device | Copy the files and restart the device|
