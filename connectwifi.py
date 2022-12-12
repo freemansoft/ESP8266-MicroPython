@@ -30,3 +30,8 @@ class WIFI(object):
             print("host ", host, " network config:", self.station.ifconfig())
         else:
             print("No wifi configured because no wifi_ssid or wifi_password set.")
+
+    def log_ap_state(self):
+        ap = network.WLAN(network.AP_IF)
+        ipinfo = ap.ifconfig()
+        print("AP network config " + str(ipinfo))

@@ -16,6 +16,7 @@ def main():
     toggle_pin(2, 200, 2)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     conn.do_connect()
+    conn.log_ap_state()
     # http_get_print("http://micropython.org/ks/test.html")
     toggle_pin(2, 200, 2)
 
