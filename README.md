@@ -307,7 +307,8 @@ Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
 
 # Open Issues
 1. The server may suffer from buffer overrun attacks
-1. Browsers often open up a 2nd request immediately to improve the browser performance.  The timeout on the conn has been set to give  you some time to click around in the browser before the connection times out.
+1. Browsers often open up a 2nd request immediately to improve the browser performance.  The timeout on the conn has been set to give  you some time to click around in the browser before the connection times out.  
+    1. This means you may have to hit reload in the browser to allow the teset harness to terminate after a control c
 1. Servo values aren't validated as integers and may crash web server if non integers are provided
 
 # References

@@ -3,6 +3,7 @@ Run with `pytest -s` if you wish to see the print output
 This is in the test module because of the __init__.py file in this dir
 """
 from tests.testfakepin import FakePin
+from tests.testfakeservo import FakeServo
 from webserver import WebServer
 from unittest import TestCase
 
@@ -18,8 +19,8 @@ def test_run_server():
     out_labels = ["LED (Pin 2)", "RELAY (Pin 16)"]
     out_inversion = [False, True]
     out_pins_all = [pin1, pin2, pin3]
-    servo_pins = []
-    servo_labels = []
+    servo_pins = [FakeServo(FakePin(14))]
+    servo_labels = ["Servo 14"]
     server = WebServer(
         out_pins, out_labels, out_inversion, out_pins_all, servo_pins, servo_labels
     )
