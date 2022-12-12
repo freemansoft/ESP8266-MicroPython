@@ -11,16 +11,16 @@ class WebServer(object):
         control_pins,
         control_pin_labels,
         control_pin_on_high,
-        monitor_pins,
         servo_pins,
         servo_pin_labels,
+        monitor_pins,
     ):
         self.control_pins = control_pins
         self.control_pin_labels = control_pin_labels
         self.control_pin_on_high = control_pin_on_high
-        self.pins_to_monitor = monitor_pins
         self.servo_pins = servo_pins
         self.servo_pin_labels = servo_pin_labels
+        self.pins_to_monitor = monitor_pins
 
     def _web_page_html(self):
 
@@ -38,19 +38,20 @@ class WebServer(object):
     <h2>Output Pins</h2> 
     %s
     <p>Current state takes into account pin inversion</p>
-    <h2>Pin Raw State</h2> 
-    <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     <h2>Servo Pins</h2> 
     %s
+    <h2>Pin Raw State (as read)</h2> 
+    <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     </body></html>"""
+
         control_pin_state = "".join(
             [
-                '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%s=on"><button class="button button">ON</button></a><a href="?out_%s=off"><button class="button button2">OFF</button></a></p>'
+                '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%d=on"><button class="button button">ON</button></a><a href="?out_%d=off"><button class="button button2">OFF</button></a></p>'
                 % (
                     pin_label,
                     str(bool(control_pin.value()) == control_pin_on_high),
-                    str(p),
-                    str(p),
+                    p,
+                    p,
                 )
                 for p, (pin_label, control_pin, control_pin_on_high) in enumerate(
                     zip(
@@ -61,35 +62,35 @@ class WebServer(object):
                 )
             ]
         )
-        # labels and values on own rows
-        monitor_pin_number = "".join(
-            ["<td> %s </td>" % (str(p)) for p in self.pins_to_monitor]
-        )
-        monitor_pin_state = "".join(
-            ["<td> %s </td>" % (str(p.value())) for p in self.pins_to_monitor]
-        )
         servo_pin_state = "".join(
             [
-                '<p><strong>%s</strong> uSec: %d</p> <p><a href="?servo_%s=0"><button class="button button">0</button></a><a href="?servo_%s=90"><button class="button button2">90</button></a><a href="?servo_%s=180"><button class="button button">180</button></a></p>'
+                '<p><strong>%s</strong> uSec: %d</p> <p><a href="?servo_%d=0"><button class="button button">0</button></a><a href="?servo_%d=90"><button class="button button2">90</button></a><a href="?servo_%d=180"><button class="button button">180</button></a></p>'
                 % (
                     servo_label,
                     self.servo_pins[p].us,
-                    str(p),
-                    str(p),
-                    str(p),
+                    p,
+                    p,
+                    p,
                 )
                 for p, servo_label in enumerate(
                     self.servo_pin_labels,
                 )
             ]
         )
+        # labels and values on own rows
+        monitor_pin_number = "".join(
+            ["<td> %s </td>" % (str(p)) for p in self.pins_to_monitor]
+        )
+        monitor_pin_state = "".join(
+            ["<td> %d </td>" % (p.value()) for p in self.pins_to_monitor]
+        )
 
         # print(monitor_pin_number, '\n', monitor_pin_state)
         return html % (
             control_pin_state,
+            servo_pin_state,
             monitor_pin_number,
             monitor_pin_state,
-            servo_pin_state,
         )
 
     def _query_parse(self, query):
