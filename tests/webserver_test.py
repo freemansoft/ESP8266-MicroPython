@@ -14,15 +14,14 @@ def test_run_server():
     pin1 = FakePin(2)
     pin2 = FakePin(5)
     pin3 = FakePin(16)
-    pins = [pin1, pin3]
-    labels = ["LED (Pin 2)", "RELAY (Pin 16)"]
-    inversion = [False, True]
-    pins_fake = [pin1, pin2, pin3]
+    out_pins = [pin1, pin3]
+    out_labels = ["LED (Pin 2)", "RELAY (Pin 16)"]
+    out_inversion = [False, True]
+    out_pins_all = [pin1, pin2, pin3]
+    servo_pins = []
+    servo_labels = []
     server = WebServer(
-        pins,
-        labels,
-        inversion,
-        pins_fake,
+        out_pins, out_labels, out_inversion, out_pins_all, servo_pins, servo_labels
     )
     print("")
     print("ctrl-c to exit this server")

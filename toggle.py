@@ -1,4 +1,5 @@
 import machine
+import time
 
 
 def toggle_pin(pinNum, msec, times):
@@ -8,8 +9,6 @@ def toggle_pin(pinNum, msec, times):
 
     def toggle_pin(p):
         p.value(not p.value())
-
-    import time
 
     # each blink is on/off
     num_left = times * 2

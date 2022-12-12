@@ -60,13 +60,15 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     1. Specifying the port after starting `rshell`
         1. Windows Style: `connect serial COM6` or whatever your COM port is on Microsoft Windows
         1. Mac Style: `connect serial /dev/cu.usbserial-1140` or whatever your serial port is on a Mac.
-1. Edit `main.py` to customize the device pins the web server will display.  A sample from the code 12/2022 is as follows
+1. Edit `main.py` to customize the device pins the web server will display.  Pass an an empty list if none of that class. A sample from the code 12/2022 is as follows:
     ```
     server = WebServer(
         [machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],
         ["LED (Pin 2)", "RELAY (Pin 16)"],
         [False, True],
         [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
+        ["Servo 1"]
+        [machine.Pin[<a pin>]]
     )
     ```
 1. rshell
@@ -75,6 +77,7 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp connectwifi.py /pyboard
     cp httpget.py /pyboard
     cp main.py /pyboard
+    cp servo.py / pyboard
     cp toggle.py /pyboard
     cp webserver.py /pyboard
     ```
@@ -113,6 +116,8 @@ graph LR;
 | - | - |
 | Iot Device | Copy the files and restart the device|
 | Development machine like a mac | Run `pytest -s` to start a server and see log output.  Press `ctrl-c` to exit the test.
+
+* Note that you must install pytest `python3 -m pip install pytest`
 
 # Web Server
 The device will actually bring up two different networks and have two different addresses if you provid valid `SSID` and `Password` for the local network.
@@ -301,8 +306,9 @@ Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
 ```
 
 # Open Issues
-1. There is a trailing / prior to the query parameter start `/?`
 1. The server may suffer from buffer overrun attacks
+1. Browsers often open up a 2nd request immediately to improve the browser performance.  The timeout on the conn has been set to give  you some time to click around in the browser before the connection times out.
+1. Servo values aren't validated as integers and may crash web server if non integers are provided
 
 # References
 Used while initially creating this
