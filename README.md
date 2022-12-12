@@ -94,21 +94,25 @@ graph LR;
             webserver_test.py
             WebServer-Dev[WebServer]
             FakePin
+            FakeServo
         end
         subgraph ESP8266
             main.py
             WebServer-ESP[WebServer]
             Pin
+            Servo
         end
     end
 
     webserver_test.py -.->|Instantiate|FakePin
+    webserver_test.py -.->|Instantiate|FakeServo
     webserver_test.py -.->|Instantiate|WebServer-Dev
-    webserver_test.py --> |"Execute(FakePin)"|WebServer-Dev
+    webserver_test.py --> |"Execute([FakePin], [FakeServo])"|WebServer-Dev
 
     main.py -.->|Instantiate| Pin
+    main.py -.->|Instantiate| Servo
     main.py -.->|Instantiate| WebServer-ESP
-    main.py --> |"Execute(Pin)"| WebServer-ESP
+    main.py --> |"Execute([Pin], [Servo])"| WebServer-ESP
 
 ```
 
