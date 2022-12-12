@@ -66,9 +66,9 @@ This document assumes you use rshell to push and pull changes from your IoT devi
         [machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],
         ["LED (Pin 2)", "RELAY (Pin 16)"],
         [False, True],
+        ["Servo 1"],
+        [machine.Pin[<a pin>]],
         [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
-        ["Servo 1"]
-        [machine.Pin[<a pin>]]
     )
     ```
 1. rshell
