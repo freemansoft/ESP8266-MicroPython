@@ -69,6 +69,7 @@ This document assumes you use rshell to push and pull changes from your IoT devi
         ["Servo 1"],
         [machine.Pin[<a pin>]],
         [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
+        "some message for the bottom"
     )
     ```
 1. rshell

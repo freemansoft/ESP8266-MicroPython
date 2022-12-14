@@ -32,6 +32,7 @@ def main():
         [Servo(machine.Pin(14))],
         ["Servo (P 14)"],
         [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]],
+        "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
     )
     server.run_server()
 

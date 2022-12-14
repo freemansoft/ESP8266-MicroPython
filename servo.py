@@ -20,12 +20,16 @@ class Servo:
     """
 
     def __init__(self, pin, freq=50, min_us=600, max_us=2400, angle=180):
+        self.pin = pin
         self.min_us = min_us
         self.max_us = max_us
         self.us = 0
         self.freq = freq
         self.angle = angle
         self.pwm = PWM(pin, freq=freq, duty=0)
+
+    def __str__(self) -> str:
+        return "%s" % (self.pin)
 
     def write_us(self, us):
         """Set the signal to be ``us`` microseconds long. Zero disables it."""

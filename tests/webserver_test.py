@@ -28,6 +28,7 @@ def test_run_server():
         servo_pins,
         servo_labels,
         out_pins_all,
+        "Hello this is the message area",
     )
     print("")
     print("ctrl-c to exit this server")

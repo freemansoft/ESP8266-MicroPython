@@ -14,6 +14,7 @@ class WebServer(object):
         servo_pins,
         servo_pin_labels,
         monitor_pins,
+        message,
     ):
         self.control_pins = control_pins
         self.control_pin_labels = control_pin_labels
@@ -21,6 +22,7 @@ class WebServer(object):
         self.servo_pins = servo_pins
         self.servo_pin_labels = servo_pin_labels
         self.pins_to_monitor = monitor_pins
+        self.message = message
 
     def _web_page_html(self):
 
@@ -42,6 +44,7 @@ class WebServer(object):
     %s
     <h2>Pin Raw State (as read)</h2> 
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
+    <p>%s</p>
     </body></html>"""
 
         control_pin_state = "".join(
@@ -91,6 +94,7 @@ class WebServer(object):
             servo_pin_state,
             monitor_pin_number,
             monitor_pin_state,
+            self.message,
         )
 
     def _query_parse(self, query):
@@ -144,6 +148,7 @@ class WebServer(object):
 
     def _free_mem(self):
         try:
+            # emperical number for ESP8266
             if gc.mem_free() < 20000:
                 print(
                     "pre-free used:"
@@ -168,7 +173,6 @@ class WebServer(object):
         s.listen(5)
         while True:
             try:
-                # emperical number for ESP8266
                 self._free_mem()
                 conn, addr = s.accept()
                 # browsers often make an immediate follow up request
@@ -188,10 +192,7 @@ class WebServer(object):
                 conn.sendall(response_raw)
                 conn.close()
                 print("Connection closed ")
-                try:
-                    print("used:" + str(gc.mem_alloc()) + " free:" + str(gc.mem_free()))
-                except AttributeError:
-                    pass
+                self._free_mem()
             except OSError as e:
                 conn.close()
                 print("Connection closed on error " + str(e) + " " + str(e.errno))
