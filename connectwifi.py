@@ -27,11 +27,13 @@ class WIFI(object):
             except ValueError:
                 # "hostname" is available in master, but not yet in June 2022 1.19.1 release
                 host = self.station.config("dhcp_hostname")
-            print("host ", host, " network config:", self.station.ifconfig())
+            ipinfo = self.station.ifconfig()
+            return ipinfo
         else:
             print("No wifi configured because no wifi_ssid or wifi_password set.")
+            return ("x", "x", "x", "x")
 
     def log_ap_state(self):
         ap = network.WLAN(network.AP_IF)
         ipinfo = ap.ifconfig()
-        print("AP network config " + str(ipinfo))
+        return ipinfo

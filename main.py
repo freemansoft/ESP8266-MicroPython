@@ -14,9 +14,12 @@ def main():
     """lets us test main() without board reset"""
     toggle_pin(2, 200, 2)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
-    conn.do_connect()
-    conn.log_ap_state()
+    ipinfo_sta = conn.do_connect()
+    ipinfo_ap = conn.log_ap_state()
     toggle_pin(2, 200, 2)
+    print("STA network config:", ipinfo_sta)
+    print("AP  network config:", ipinfo_ap)
+
     # http_get_print("http://micropython.org/ks/test.html")
 
     # import webrepl

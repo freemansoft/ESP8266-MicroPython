@@ -29,6 +29,9 @@ class FakeServo:
         # hacked in test
         self._pin = pin
 
+    def __str__(self) -> str:
+        return "%s" % (self._pin)
+
     def write_us(self, us):
         """Set the signal to be ``us`` microseconds long. Zero disables it."""
         if us == 0:

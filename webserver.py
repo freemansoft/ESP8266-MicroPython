@@ -109,34 +109,57 @@ class WebServer(object):
         print("Parameters: " + str(parameters))
         return parameters
 
+    def _operate_control_pins(self, parameters):
+        # iterate across control pins to see if any were updated
+        for p, control_pin in enumerate(self.control_pins):
+            try:
+                out_value = parameters["out_" + str(p)]
+                print("out_%s %s %s" % (str(p), control_pin, out_value))
+                if out_value == "on":
+                    control_pin.value(int(self.control_pin_on_high[p]))
+                elif out_value == "off":
+                    control_pin.value(int(not self.control_pin_on_high[p]))
+            except KeyError:
+                pass
+
+    def _operate_servos(self, parameters):
+        for p, servo_pin in enumerate(self.servo_pins):
+            try:
+                servo_value = parameters["servo_" + str(p)]
+                print("servo_%s %s %s" % (str(p), servo_pin, servo_value))
+                servo_pin.write_angle(int(servo_value))
+            except KeyError:
+                pass
+
     def _handle_request(self, request):
         # first line is request - ignore the headers and referrer
         line_get = request.split("\n")[0]
         print("Request Processing: %s" % (line_get))
         if line_get.startswith("GET"):
             parameters = self._query_parse(line_get)
-            # iterate across control pins to see if any were updated
-            for p, control_pin in enumerate(self.control_pins):
-                try:
-                    out_value = parameters["out_" + str(p)]
-                    if out_value == "on":
-                        # print("out_%s %s On" % (str(p), control_pin))
-                        control_pin.value(int(self.control_pin_on_high[p]))
-                    elif out_value == "off":
-                        # print("out_%s %s Off" % (str(p), control_pin))
-                        control_pin.value(int(not self.control_pin_on_high[p]))
-                except KeyError:
-                    pass
-
-            for p, servo_pin in enumerate(self.servo_pins):
-                try:
-                    servo_value = parameters["servo_" + str(p)]
-                    # print("servo_%s %s" % (str(p), servo_value))
-                    servo_pin.write_angle(int(servo_value))
-                except KeyError:
-                    pass
+            self._operate_control_pins(parameters)
+            self._operate_servos(parameters)
         else:
             print("HTTP GET Only.  Ignoring: %s" % line_get)
+
+    def _free_mem(self):
+        try:
+            if gc.mem_free() < 20000:
+                print(
+                    "pre-free used:"
+                    + str(gc.mem_alloc())
+                    + " free:"
+                    + str(gc.mem_free())
+                )
+                gc.collect()
+                print(
+                    "post-free used:"
+                    + str(gc.mem_alloc())
+                    + " free:"
+                    + str(gc.mem_free())
+                )
+        except AttributeError:
+            print("no memfree in this version of python")
 
     def run_server(self):
         """runs the web server"""
@@ -146,26 +169,10 @@ class WebServer(object):
         while True:
             try:
                 # emperical number for ESP8266
-                try:
-                    if gc.mem_free() < 20000:
-                        print(
-                            "pre-free used:"
-                            + str(gc.mem_alloc())
-                            + " free:"
-                            + str(gc.mem_free())
-                        )
-                        gc.collect()
-                        print(
-                            "post-free used:"
-                            + str(gc.mem_alloc())
-                            + " free:"
-                            + str(gc.mem_free())
-                        )
-                except AttributeError:
-                    print("no memfree in this version of python")
+                self._free_mem()
                 conn, addr = s.accept()
                 # browsers often make an immediate follow up request
-                conn.settimeout(10.0)
+                conn.settimeout(30.0)
                 print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024).decode()
                 print("Request Bytes:%d " % (len(request)))
