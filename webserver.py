@@ -33,18 +33,19 @@ class WebServer(object):
     p{font-size: 1.5rem;}
     .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
     .button2{background-color: #4286f4;} 
-    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;} tr {border-bottom: 1px solid #ddd; font-size: 1.5rem;} td { padding: 10px;}
+    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;} tr {border-bottom: 1px solid #ddd; font-size: 1.0rem;} td { padding: 10px;}
     </style></head>
     <body> 
-    <h1>ESP 8266</h1>
+    <h1>ESP 8266</h1><hr>
     <h2>Output Pins</h2> 
     %s
-    <p>Current state takes into account pin inversion</p>
+    <br/>Current state takes into account pin inversion<br/><hr>
     <h2>Servo Pins</h2> 
     %s
-    <h2>Pin Raw State (as read)</h2> 
+    <p></p><hr>
+    <h2>Raw Pin State - as read</h2> 
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
-    <p>%s</p>
+    <br/><hr><br/>%s<br/>
     </body></html>"""
 
         control_pin_state = "".join(
