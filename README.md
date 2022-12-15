@@ -179,11 +179,18 @@ sequenceDiagram
 
 ```
 
-# Open Issues
+# Open Issues - TODO
+Run Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
+1. Portal on first boot to enter network credentials not supported
+
+Development Time
 1. Must manually create config.py and populate with the values.
 1. OTA not enabled.
-1. Portal on first boot to enter network credentials not supported
+
+Test Time
+1. Test runs the server but doesn't actually test or close the server
+
 
 # Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
