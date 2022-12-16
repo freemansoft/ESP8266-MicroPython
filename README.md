@@ -107,13 +107,13 @@ graph LR;
 
     webserver_test.py -.->|Instantiate|FakePin
     webserver_test.py -.->|Instantiate|FakeServo
-    webserver_test.py -.->|Instantiate|WebServer-Dev
-    webserver_test.py --> |"Execute([FakePin], [FakeServo])"|WebServer-Dev
+    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo])"|WebServer-Dev
+    webserver_test.py --> |"Execute"|WebServer-Dev
 
     main.py -.->|Instantiate| Pin
     main.py -.->|Instantiate| Servo
-    main.py -.->|Instantiate| WebServer-ESP
-    main.py --> |"Execute([Pin], [Servo])"| WebServer-ESP
+    main.py -.->|"Instantiate([Pin], [Servo])"| WebServer-ESP
+    main.py --> |"Execute"| WebServer-ESP
 
 ```
 
