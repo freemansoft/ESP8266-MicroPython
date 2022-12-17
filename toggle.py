@@ -2,10 +2,8 @@ import machine
 import time
 
 
-def toggle_pin(pinNum, msec, times):
-    """2: led or 16:relay"""
-
-    pin = machine.Pin(pinNum, machine.Pin.OUT)
+def toggle_pin(pin, msec, times):
+    """pin: an actual pin construct not number on my ESP8266 was from 2: led or 16:relay"""
 
     def toggle_pin(p):
         p.value(not p.value())

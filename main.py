@@ -12,11 +12,12 @@ from httpget import http_get_print
 
 def main():
     """lets us test main() without board reset"""
-    toggle_pin(2, 200, 2)
+    pin_to_toggle = machine.Pin(2, machine.Pin.OUT)
+    toggle_pin(pin_to_toggle, 300, 3)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     ipinfo_sta = conn.do_connect()
     ipinfo_ap = conn.log_ap_state()
-    toggle_pin(2, 200, 2)
+    toggle_pin(pin_to_toggle, 300, 4)
     print("STA network config:", ipinfo_sta)
     print("AP  network config:", ipinfo_ap)
 
