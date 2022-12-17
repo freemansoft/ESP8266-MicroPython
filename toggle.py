@@ -1,4 +1,3 @@
-import machine
 import time
 
 
