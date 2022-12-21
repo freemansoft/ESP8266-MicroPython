@@ -63,12 +63,11 @@ This document assumes you use rshell to push and pull changes from your IoT devi
 1. Edit `main.py` to customize the device pins the web server will display.  Pass an an empty list if none of that class. A sample from the code 12/2022 is as follows:
     ```
     server = WebServer(
-        [machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],
+        [Signal(Pin(2, Pin.OUT), True), Signal(Pin(16, Pin.OUT), False)],
         ["LED (Pin 2)", "RELAY (Pin 16)"],
-        [False, True],
         ["Servo 1"],
-        [machine.Pin[<a pin>]],
-        [machine.Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
+        [Pin[<a pin>]],
+        [Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
         "some message for the bottom"
     )
     ```
@@ -155,7 +154,7 @@ sequenceDiagram
     main ->> connectwifi: connect
     connectwifi ->> network: dhcp_request
     network -->> connectwifi: IP address
-    main ->> webserver: new(control_pin_nums,control_pin_labels,control_pin_on_high,monitor_pin_nums)
+    main ->> webserver: new(control_pin as signal,control_pin_labels,monitor_pin_nums)
     main ->> webserver: run()
     webserver ->> webserver: listen on socket
 ```
@@ -248,7 +247,7 @@ Basically we are running main() line by line
 1. Start up a web page and hit the IP address from your browser
     ```
     from webserver import WebServer
-    server = WebServer([machine.Pin(2, machine.Pin.OUT), machine.Pin(16, machine.Pin.OUT)],["LED (Pin 2)", "RELAY (Pin 16)"],[False, True],[machine.Pin(i) for i in [2, 16]])
+    server = WebServer([Signal(Pin(2, Pin.OUT),True),Signal(Pin(16, Pin.OUT), False], True),["LED (Pin 2)", "RELAY (Pin 16)"],[Pin(i) for i in [2, 16]])
     server.run_server()
     ```
 

@@ -4,13 +4,14 @@ import gc
 
 
 class WebServer(object):
-    """webserver that can change output pins and display current pin state"""
+    """webserver that can change output pins and display current pin state.
+    Control pins should be presented as machine.Signal.
+    """
 
     def __init__(
         self,
         control_pins,
         control_pin_labels,
-        control_pin_on_high,
         servo_pins,
         servo_pin_labels,
         monitor_pins,
@@ -18,7 +19,6 @@ class WebServer(object):
     ):
         self.control_pins = control_pins
         self.control_pin_labels = control_pin_labels
-        self.control_pin_on_high = control_pin_on_high
         self.servo_pins = servo_pins
         self.servo_pin_labels = servo_pin_labels
         self.pins_to_monitor = monitor_pins
@@ -53,15 +53,14 @@ class WebServer(object):
                 '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%d=on"><button class="button button">ON</button></a><a href="?out_%d=off"><button class="button button2">OFF</button></a></p>'
                 % (
                     pin_label,
-                    str(bool(control_pin.value()) == control_pin_on_high),
+                    str(control_pin.value()),
                     p,
                     p,
                 )
-                for p, (pin_label, control_pin, control_pin_on_high) in enumerate(
+                for p, (pin_label, control_pin) in enumerate(
                     zip(
                         self.control_pin_labels,
                         self.control_pins,
-                        self.control_pin_on_high,
                     )
                 )
             ]
@@ -121,9 +120,9 @@ class WebServer(object):
                 out_value = parameters["out_" + str(p)]
                 print("out_%s %s %s" % (str(p), control_pin, out_value))
                 if out_value == "on":
-                    control_pin.value(int(self.control_pin_on_high[p]))
+                    control_pin.on()
                 elif out_value == "off":
-                    control_pin.value(int(not self.control_pin_on_high[p]))
+                    control_pin.off()
             except KeyError:
                 pass
 
