@@ -206,13 +206,14 @@ This project includes wrapper that binds a `Periodic Timer` with a `Callback Fun
 
 ```mermaid
 graph LR;
-    subgraph PeriodicOperator
-        Timer
-        Callback
-        Timer -.->|"invoke()"| Callback
-    end
-    Setup--> |"init(Timer,Callback)"|PeriodicOperator
+    PeriodicOperator
+    Timer
+    Callback
+    Timer[Periodic Timer] -.->|"invoke()"| Callback
+    Setup--- |"create(Timer,Callback)"|PeriodicOperator
     Logic--> |"start()"|PeriodicOperator
+    PeriodicOperator -->|"init()"| Timer
+    PeriodicOperator -->|"deinit()"| Timer
     Logic--> |"stop()"|PeriodicOperator
 
 ```
