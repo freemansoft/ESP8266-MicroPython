@@ -9,6 +9,7 @@ graph LR;
     Buttons[Switches, ec.]
     Relays
     Servos
+    DigitalIO[Digital IO]
     ESP8266((IOT dev board ESP8266))
     Cloud(Cloud IoT)
     Periodic>Periodic Operations]
@@ -23,6 +24,7 @@ graph LR;
     ESP8266 -.-> Cloud
     ESP8266 --> Servos
     ESP8266 --> Relays
+    ESP8266 --> DigitalIO
     ESP8266 --- Periodic
 ```
 
