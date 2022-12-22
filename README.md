@@ -298,7 +298,7 @@ You can exercise the utilities in this package from the REPL. This assumes that 
     ```
 
 ## The easy way
-This assumes you are at the REPL prompt
+This assumes you are at the REPL prompt possibly from rshell
 
 1. Run `main()`
     ```
@@ -310,14 +310,19 @@ This assumes you are at the REPL prompt
     ```
     ctrl-c
     ```
+1. Soft reboot the device. Reboot the REPL. 
+    ```
+    ctrl-d
+    ```
 1. Exit the REPL with
     ```
     ctrl-x
     ```
 
 ## The long way
-Basically we are running main() line by line
+Basically we are running main() line by line.  Copy and past each section from main.py into the repl prompt.
 
+These instructions are conceptual **are out of date** for the current code base.
 1. Connect to local wifi with
     ```
     from config import wifi_ssid, wifi_password
