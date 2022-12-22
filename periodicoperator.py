@@ -13,12 +13,14 @@ class PeriodicOperator:
         return "%s is running: %d" % (self._timer_, self._isRunning_)
 
     def start(self):
-        self._timer_.init(period=self._period_, callback=self._callback_)
-        self._isRunning_ = True
+        if not self._isRunning_:
+            self._timer_.init(period=self._period_, callback=self._callback_)
+            self._isRunning_ = True
 
     def stop(self):
-        self._timer_.deinit()
-        self._isRunning_ = False
+        if self._isRunning_:
+            self._timer_.deinit()
+            self._isRunning_ = False
 
     def running(self):
         return self._isRunning_

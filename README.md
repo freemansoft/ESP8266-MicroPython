@@ -86,6 +86,7 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp httpget.py /pyboard
     cp main.py /pyboard
     cp servo.py / pyboard
+    cp flashpin.py /pyboard
     cp toggle.py /pyboard
     cp webserver.py /pyboard
     ```
@@ -242,7 +243,7 @@ sequenceDiagram
         ESP8266->>Operator: enable()
         activate ESP8266
         activate Operator
-        Operator->>Timer: start()
+        Operator->>Timer: init()
         deactivate Operator
         deactivate ESP8266
     end
@@ -250,7 +251,7 @@ sequenceDiagram
         ESP8266->>Operator: disable()
         activate ESP8266
         activate Operator
-        Operator->>Timer: stop()
+        Operator->>Timer: deinit()
         deactivate Operator
         deactivate ESP8266
     end
@@ -326,7 +327,7 @@ Basically we are running main() line by line
     ```
 1. Now flash the lights
     ```
-    from toggle import flash_pin
+    from flashpin import flash_pin
     flash_pin(2,1000,10)
     ```
 1. Make a web request to a remote server
@@ -383,12 +384,12 @@ Type "help()" for more information.
             It's working if you can read this!
         </body>
     </html>
->>> from toggle import toggle
+>>> from flashpin import flash_pin
 >>> flash_pin(2,500)
     _control-c_
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-  File "toggle.py", line 14, in toggle
+  File "flashpin.py", line 14, in flash_pin
 KeyboardInterrupt:
 >>>
     _control-x_
@@ -425,6 +426,7 @@ MicroPython
 * https://forum.micropython.org/viewtopic.php?f=2&t=7969
 * https://blog.miguelgrinberg.com/post/micropython-and-the-internet-of-things-part-iii-building-a-micropython-application
 * https://techtutorialsx.com/2017/06/06/esp32-esp8266-micropython-automatic-connection-to-wifi/
+* https://github.com/dhylands/upy-examples Concise examples including callback class
 
 Web Server Examples some based on the same core
 * https://randomnerdtutorials.com/esp32-esp8266-micropython-web-server/

@@ -5,16 +5,25 @@ from config import web_repl_password
 """ copies of the variables"""
 from connectwifi import WIFI
 from webserver import WebServer
-from toggle import flash_pin, toggle_pin_callback
+from flashpin import flash_pin
+from toggle import TogglePin
 from servo import Servo
 from httpget import http_get_print
 from periodicoperator import PeriodicOperator
+
+import micropython
+
+# timer/interrupt exception buffer
+micropython.alloc_emergency_exception_buf(100)
 
 
 def main():
 
     # basically flashing every 1 seconds
-    a_periodic_operator = PeriodicOperator(Timer(-1), 500, toggle_pin_callback)
+    a_periodic_handler = TogglePin(Pin(2, Pin.OUT))
+    a_periodic_operator = PeriodicOperator(
+        Timer(-1), 500, a_periodic_handler.toggle_pin_callback
+    )
 
     """lets us test main() without board reset"""
     pin_to_toggle = Pin(2, Pin.OUT)
