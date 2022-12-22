@@ -15,6 +15,8 @@ class WebServer(object):
         servo_pins,
         servo_pin_labels,
         monitor_pins,
+        periodic_ops,
+        periodic_labels,
         message,
     ):
         self.control_pins = control_pins
@@ -22,6 +24,8 @@ class WebServer(object):
         self.servo_pins = servo_pins
         self.servo_pin_labels = servo_pin_labels
         self.pins_to_monitor = monitor_pins
+        self.periodic_ops = periodic_ops
+        self.periodic_labels = periodic_labels
         self.message = message
 
     def _web_page_html(self):
@@ -31,7 +35,7 @@ class WebServer(object):
     html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
     h1{color: #0F3376; padding: 2vh;}
     p{font-size: 1.5rem;}
-    .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
+    .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 20px; text-decoration: none; font-size: 20px; margin: 2px; cursor: pointer;}
     .button2{background-color: #4286f4;} 
     table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;} tr {border-bottom: 1px solid #ddd; font-size: 1.0rem;} td { padding: 10px;}
     </style></head>
@@ -41,6 +45,9 @@ class WebServer(object):
     %s
     <br/>Current state takes into account pin inversion<br/><hr>
     <h2>Servo Pins</h2> 
+    %s
+    <p></p><hr>
+    <h2>Timed Operations</h2> 
     %s
     <p></p><hr>
     <h2>Raw Pin State - as read</h2> 
@@ -80,6 +87,23 @@ class WebServer(object):
                 )
             ]
         )
+        timer_pin_state = "".join(
+            [
+                '<p><strong>%s</strong> Currently Running: %s</p> <p><a href="?period_%d=on"><button class="button button">ON</button></a><a href="?period_%d=off"><button class="button button2">OFF</button></a></p>'
+                % (
+                    periodic_label,
+                    str(periodic_op.running()),
+                    p,
+                    p,
+                )
+                for p, (periodic_label, periodic_op) in enumerate(
+                    zip(
+                        self.periodic_labels,
+                        self.periodic_ops,
+                    )
+                )
+            ]
+        )
         # labels and values on own rows
         monitor_pin_number = "".join(
             ["<td> %s </td>" % (str(p)) for p in self.pins_to_monitor]
@@ -92,6 +116,7 @@ class WebServer(object):
         return html % (
             control_pin_state,
             servo_pin_state,
+            timer_pin_state,
             monitor_pin_number,
             monitor_pin_state,
             self.message,
@@ -135,6 +160,19 @@ class WebServer(object):
             except KeyError:
                 pass
 
+    def _operate_periodic(self, parameters):
+        # iterate across control pins to see if any were updated
+        for p, period_func in enumerate(self.periodic_ops):
+            try:
+                out_value = parameters["period_" + str(p)]
+                print("out_%s %s %s" % (str(p), self.periodic_labels[p], out_value))
+                if out_value == "on":
+                    period_func.start()
+                elif out_value == "off":
+                    period_func.stop()
+            except KeyError:
+                pass
+
     def _handle_request(self, request):
         # first line is request - ignore the headers and referrer
         line_get = request.split("\n")[0]
@@ -143,6 +181,7 @@ class WebServer(object):
             parameters = self._query_parse(line_get)
             self._operate_control_pins(parameters)
             self._operate_servos(parameters)
+            self._operate_periodic(parameters)
         else:
             print("HTTP GET Only.  Ignoring: %s" % line_get)
 

@@ -1,5 +1,8 @@
 class FakeSignal(object):
-    """This is a test class. Do NOT install this class on the MicroPython board."""
+    """
+    This is a test class. Do NOT install this class on the MicroPython board.
+    Required because signal is in the machine package -- seems silly
+    """
 
     def __init__(self, pin, invert=False):
         self._pin = pin
@@ -15,11 +18,11 @@ class FakeSignal(object):
             self._value = int(value)
             if self._invert:
                 if self._value == 0:
-                    self.pin.value(1)
+                    self._pin.value(1)
                 else:
-                    self.pin.value(0)
+                    self._pin.value(0)
             else:
-                self.pin.value(self._value)
+                self._pin.value(self._value)
         return self._value
 
     def on(self):

@@ -1,23 +1,28 @@
-from machine import Pin, Signal
+from machine import Pin, Signal, Timer
 from config import wifi_ssid, wifi_password, hostname
 from config import web_repl_password
 
 """ copies of the variables"""
 from connectwifi import WIFI
 from webserver import WebServer
-from toggle import toggle_pin
+from toggle import flash_pin, toggle_pin_callback
 from servo import Servo
 from httpget import http_get_print
+from periodicoperator import PeriodicOperator
 
 
 def main():
+
+    # basically flashing every 1 seconds
+    a_periodic_operator = PeriodicOperator(Timer(-1), 500, toggle_pin_callback)
+
     """lets us test main() without board reset"""
     pin_to_toggle = Pin(2, Pin.OUT)
-    toggle_pin(pin_to_toggle, 300, 3)
+    flash_pin(pin_to_toggle, 300, 3)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     ipinfo_sta = conn.do_connect()
     ipinfo_ap = conn.log_ap_state()
-    toggle_pin(pin_to_toggle, 300, 4)
+    flash_pin(pin_to_toggle, 300, 4)
     print("STA network config:", ipinfo_sta)
     print("AP  network config:", ipinfo_ap)
 
@@ -35,6 +40,8 @@ def main():
         [Servo(Pin(14))],
         ["Servo (P 14)"],
         [Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]],
+        [a_periodic_operator],
+        ["Flash LED"],
         "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
     )
     server.run_server()

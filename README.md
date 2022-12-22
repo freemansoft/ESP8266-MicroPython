@@ -11,6 +11,7 @@ graph LR;
     Servos
     ESP8266((IOT dev board ESP8266))
     Cloud(Cloud IoT)
+    Periodic>Periodic Operations]
 
     Browser -.-> |Wi-Fi|ESP8266
     DevMachine --- |USB| SerialAdapter
@@ -22,6 +23,7 @@ graph LR;
     ESP8266 -.-> Cloud
     ESP8266 --> Servos
     ESP8266 --> Relays
+    ESP8266 --- Periodic
 ```
 
 # MicroPython
@@ -66,7 +68,9 @@ This document assumes you use rshell to push and pull changes from your IoT devi
         [Signal(Pin(2, Pin.OUT), True), Signal(Pin(16, Pin.OUT), False)],
         ["LED (Pin 2)", "RELAY (Pin 16)"],
         ["Servo 1"],
-        [Pin[<a pin>]],
+        [Pin(<a pin>)],
+        [PeriodicOperators]
+        [PeriodicLabels]
         [Pin(i) for i in [0, 2, 4, 5, 12, 13, 14, 15, 16]],
         "some message for the bottom"
     )
@@ -95,23 +99,26 @@ graph LR;
             WebServer-Dev[WebServer]
             FakePin
             FakeServo
+            FakePeriodicOperator[Operator not implemented]
         end
         subgraph ESP8266
             main.py
             WebServer-ESP[WebServer]
             Pin
             Servo
+            PeriodicOperator[Periodic Operator]
         end
     end
 
     webserver_test.py -.->|Instantiate|FakePin
     webserver_test.py -.->|Instantiate|FakeServo
-    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo])"|WebServer-Dev
+    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
     webserver_test.py --> |"Execute"|WebServer-Dev
 
-    main.py -.->|Instantiate| Pin
-    main.py -.->|Instantiate| Servo
-    main.py -.->|"Instantiate([Pin], [Servo])"| WebServer-ESP
+    main.py -.->|"Instantiate"| Pin
+    main.py -.->|"Instantiate"| Servo
+    main.py -.->|"Instantiate(Timer, Callback)"| PeriodicOperator
+    main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer-ESP
     main.py --> |"Execute"| WebServer-ESP
 
 ```
@@ -149,14 +156,21 @@ sequenceDiagram
     participant webserver
     participant network
 
+    activate main
     main ->> config: loads
-    main ->> connectwifi: new(wifi_ssid,pasword,hostname)
-    main ->> connectwifi: connect
-    connectwifi ->> network: dhcp_request
-    network -->> connectwifi: IP address
-    main ->> webserver: new(control_pin as signal,control_pin_labels,monitor_pin_nums)
-    main ->> webserver: run()
+        activate main
+        main ->> connectwifi: new(wifi_ssid,pasword,hostname)
+        main ->> connectwifi: connect
+        connectwifi ->> network: dhcp_request
+        network -->> connectwifi: IP address
+        deactivate main
+    
+        main ->> webserver: new(control_pin as signal,control_pin_labels,monitor_pin_nums)
+        activate main
+        main ->> webserver: run()
+        deactivate main
     webserver ->> webserver: listen on socket
+    deactivate main
 ```
 
 # Web Request / Response
@@ -165,18 +179,75 @@ sequenceDiagram
 sequenceDiagram
     participant Browser
     participant ESP8266
-    participant Relay
     participant LED
+    participant Relay
+    participant PeriodicOperator
 
+    activate Browser
     Browser->>ESP8266: HTTP GET
+    activate ESP8266
     ESP8266->>ESP8266: Evaluate Query Parameters
-    opt Valid Query Parameters Exist
+    opt Valid LED Parameters Exist
         ESP8266->>LED: Toggle On/Off
+    end
+    opt Valid Relay Parameters Exist
         ESP8266->>Relay: Toggle Open/Close
     end
+    opt Valid TimerCallback Parameters Exist
+        ESP8266->>PeriodicOperator: Enable/Disable
+    end
     ESP8266-->>Browser: Success 200 and HTML
+    deactivate ESP8266
+    deactivate Browser
 
 ```
+# Periodic Operator
+This project includes wrapper that binds a `Periodic Timer` with a `Callback Function`. The operator exists to provide a single object that can be passed into other modules. like the web server in this project.  
+1. Create a Timer
+1. Create a Callback function
+1. Create an Operator containinging both
+1. Pass the operator to some web or other reponse handler.
+1. The handler can then turn on and off the timer essentially enabling and disabling the periodic event. 
+    1. The simplest example is that this lets you create a blinking LED without blocking the rest of your program
+
+```mermaid
+sequenceDiagram
+    participant ESP8266
+    participant Operator
+    participant Timer
+    participant Callback
+
+    ESP8266 ->>Operator: instantiate(Timer, Callback)
+
+    opt Enable periodic operation
+        ESP8266->>Operator: enable()
+        activate ESP8266
+        activate Operator
+        Operator->>Timer: start()
+        deactivate Operator
+        deactivate ESP8266
+    end
+    opt Disable periodic operation
+        ESP8266->>Operator: disable()
+        activate ESP8266
+        activate Operator
+        Operator->>Timer: stop()
+        deactivate Operator
+        deactivate ESP8266
+    end
+    opt Timer roll over
+        activate Timer
+        Timer ->>Timer: rollover
+        Timer->>Callback: execute
+        activate Callback
+        Callback ->> Callback: process
+        deactivate Callback
+        deactivate Timer
+    end
+
+```
+
+
 
 # Open Issues - TODO
 Run Time
@@ -236,8 +307,8 @@ Basically we are running main() line by line
     ```
 1. Now flash the lights
     ```
-    from toggle import toggle_pin
-    toggle_pin(2,1000,10)
+    from toggle import flash_pin
+    flash_pin(2,1000,10)
     ```
 1. Make a web request to a remote server
     ```
@@ -247,7 +318,7 @@ Basically we are running main() line by line
 1. Start up a web page and hit the IP address from your browser
     ```
     from webserver import WebServer
-    server = WebServer([Signal(Pin(2, Pin.OUT),True),Signal(Pin(16, Pin.OUT), False], True),["LED (Pin 2)", "RELAY (Pin 16)"],[Pin(i) for i in [2, 16]])
+    server = WebServer(....)
     server.run_server()
     ```
 
@@ -294,7 +365,7 @@ Type "help()" for more information.
         </body>
     </html>
 >>> from toggle import toggle
->>> toggle_pin(2,500)
+>>> flash_pin(2,500)
     _control-c_
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
