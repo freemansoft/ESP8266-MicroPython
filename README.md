@@ -10,11 +10,13 @@ graph LR;
     Relays
     Servos
     DigitalIO[Digital IO]
+    WebServer(On Board Web Server)
     ESP8266((IOT dev board ESP8266))
     Cloud(Cloud IoT)
     Periodic>Periodic Operations]
 
-    Browser -.-> |Wi-Fi|ESP8266
+    Browser -.-> |Wi-Fi|WebServer
+    WebServer --- ESP8266
     DevMachine --- |USB| SerialAdapter
     SerialAdapter --- |3v Serial|ESP8266
     DevMachine -.-> |OTA|ESP8266
