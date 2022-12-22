@@ -203,6 +203,20 @@ sequenceDiagram
 ```
 # Periodic Operator
 This project includes wrapper that binds a `Periodic Timer` with a `Callback Function`. The operator exists to provide a single object that can be passed into other modules. like the web server in this project.  
+
+```mermaid
+graph LR;
+    subgraph PeriodicOperator
+        Timer
+        Callback
+        Timer -.->|"invoke()"| Callback
+    end
+    Setup--> |"init(Timer,Callback)"|PeriodicOperator
+    Logic--> |"start()"|PeriodicOperator
+    Logic--> |"stop()"|PeriodicOperator
+
+```
+
 1. Create a Timer
 1. Create a Callback function
 1. Create an Operator containinging both
