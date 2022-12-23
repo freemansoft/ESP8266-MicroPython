@@ -116,10 +116,34 @@ subgraph IOT Device
     main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer
     main.py --> |"Execute"| WebServer
 
-    PeriodicOperator --> |"start/stop"| Timer
-    Timer -->            |"Invokes toggle as callback"| Toggle
 end
 ```
+### Timer Behavior
+The timer basically has 3 phases
+1. Initialize the web server
+1. Start and Stop the Timer
+1. Invoke callback on timer interrupt
+
+```mermaid
+graph LR;
+subgraph IOT Device
+        main.py
+        PeriodicOperator[Periodic Operator]
+        Timer
+        Timer2[Timer]
+        Toggle[Toggle Callback]
+        WebServer[WebServer ESP]
+        WebServer2[WebServer ESP]
+
+    main.py --> |"start"| WebServer
+
+    WebServer2 --> |"start/stop"| PeriodicOperator
+    PeriodicOperator --> |"start/stop"| Timer
+    Timer2 --> |"Timer Event"| Timer2
+    Timer2 --> |"Invokes toggle as callback"| Toggle
+end
+```
+
 ### Developer Machine
 ```mermaid
 graph LR;
@@ -139,9 +163,6 @@ subgraph Developer Machine
     webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperator
     webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [Periodic])"|WebServer
     webserver_test.py --> |"Execute"|WebServer
-
-    PeriodicOperator  --> |"start/stop"|FakeTimer
-    FakeTimer -->        |"Invoke not implemented"| Toggle
 
 end
 ```
