@@ -104,7 +104,9 @@ graph LR;
             WebServer-Dev[WebServer]
             FakePin
             FakeServo
-            FakePeriodicOperator[Operator not implemented]
+            PeriodicOperatorF[Periodic Operator]
+            FakeTimer
+            ToggleF[Toggle]
         end
         subgraph ESP8266
             main.py
@@ -112,19 +114,28 @@ graph LR;
             Pin
             Servo
             PeriodicOperator[Periodic Operator]
+            Timer
+            Toggle
         end
     end
 
-    webserver_test.py -.->|Instantiate|FakePin
-    webserver_test.py -.->|Instantiate|FakeServo
+    webserver_test.py -.->|"Instantiate"|FakePin
+    webserver_test.py -.->|"Instantiate"|FakeServo
+    webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperatorF
     webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
     webserver_test.py --> |"Execute"|WebServer-Dev
+
+    PeriodicOperatorF -.->|Contains| FakeTimer
+    PeriodicOperatorF -.->|Contains|ToggleF
 
     main.py -.->|"Instantiate"| Pin
     main.py -.->|"Instantiate"| Servo
     main.py -.->|"Instantiate(Timer, Callback)"| PeriodicOperator
     main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer-ESP
     main.py --> |"Execute"| WebServer-ESP
+
+    PeriodicOperator -.->|Contains| Timer
+    PeriodicOperator -.->|Contains| Toggle
 
 ```
 
@@ -257,7 +268,7 @@ sequenceDiagram
     end
     opt Timer roll over
         activate Timer
-        Timer ->>Timer: rollover
+        Timer ->>Timer: "timer IRQ"
         Timer->>Callback: execute
         activate Callback
         Callback ->> Callback: process
@@ -417,6 +428,7 @@ Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
 1. Browsers often open up a 2nd request immediately to improve the browser performance.  The timeout on the conn has been set to give  you some time to click around in the browser before the connection times out.  
     1. This means you may have to hit reload in the browser to allow the teset harness to terminate after a control c
 1. Servo values aren't validated as integers and may crash web server if non integers are provided
+1. FakeTimer does not actually fire periodic actions and is essentially a stub
 
 # References
 Used while initially creating this
