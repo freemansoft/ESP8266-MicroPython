@@ -96,37 +96,17 @@ Most people will just run the server on their device per the instructions above
 
 This repository also contains a test jig that lets you run the server on your local development machine.  It currently only supports basic output pins and logs the operations it runs.  
 
+### ESP8266
 ```mermaid
 graph LR;
-    subgraph ecosystem
-        subgraph Developer-Machine
-            webserver_test.py
-            WebServer-Dev[WebServer]
-            FakePin
-            FakeServo
-            PeriodicOperatorF[Periodic Operator]
-            FakeTimer
-            ToggleF[Toggle]
-        end
-        subgraph ESP8266
-            main.py
-            WebServer-ESP[WebServer]
-            Pin
-            Servo
-            PeriodicOperator[Periodic Operator]
-            Timer
-            Toggle
-        end
-    end
-
-    webserver_test.py -.->|"Instantiate"|FakePin
-    webserver_test.py -.->|"Instantiate"|FakeServo
-    webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperatorF
-    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
-    webserver_test.py --> |"Execute"|WebServer-Dev
-
-    PeriodicOperatorF -.->|Contains| FakeTimer
-    PeriodicOperatorF -.->|Contains|ToggleF
+subgraph x
+        main.py
+        WebServer-ESP[WebServer]
+        Pin
+        Servo
+        PeriodicOperator[Periodic Operator]
+        Timer
+        Toggle
 
     main.py -.->|"Instantiate"| Pin
     main.py -.->|"Instantiate"| Servo
@@ -134,9 +114,33 @@ graph LR;
     main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer-ESP
     main.py --> |"Execute"| WebServer-ESP
 
-    PeriodicOperator -.->|Contains| Timer
-    PeriodicOperator -.->|Contains| Toggle
+    PeriodicOperator -.->|starts/stops| Timer
+    PeriodicOperator -.->|references| Toggle
+    Timer --->|"Invokes toggle as callback"| Toggle
+end
+```
+### Developer Machine
+```mermaid
+graph LR;
+subgraph x
+        webserver_test.py
+        WebServer-Dev[WebServer]
+        FakePin
+        FakeServo
+        PeriodicOperatorF[Periodic Operator]
+        FakeTimer
+        ToggleF[Toggle]
 
+    webserver_test.py -.->|"Instantiate"|FakePin
+    webserver_test.py -.->|"Instantiate"|FakeServo
+    webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperatorF
+    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
+    webserver_test.py --> |"Execute"|WebServer-Dev
+
+    PeriodicOperatorF -.->|"starts/stops"|FakeTimer
+    PeriodicOperatorF -.->|references|ToggleF
+    FakeTimer -->|"Invoke not implemented"| ToggleF
+end
 ```
 
 | Execution Environment | Steps |
