@@ -125,20 +125,20 @@ The timer basically has 3 phases
 1. Invoke callback on timer interrupt
 
 ```mermaid
-graph LR;
+graph TD;
 subgraph IOT Device
-        main.py
-        PeriodicOperator[Periodic Operator]
-        Timer
-        Timer2[Timer]
-        Toggle[Toggle Callback]
-        WebServer[WebServer ESP]
-        WebServer2[WebServer ESP]
-
+    main.py
+    WebServer[WebServer ESP]
     main.py --> |"start"| WebServer
 
+    WebServer2[WebServer ESP]
+    PeriodicOperator[Periodic Operator]
+    Timer
     WebServer2 --> |"start/stop"| PeriodicOperator
     PeriodicOperator --> |"start/stop"| Timer
+
+    Timer2[Timer]
+    Toggle[Toggle Callback]
     Timer2 --> |"Timer Event"| Timer2
     Timer2 --> |"Invokes toggle as callback"| Toggle
 end
