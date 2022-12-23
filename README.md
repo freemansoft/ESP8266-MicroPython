@@ -99,47 +99,49 @@ This repository also contains a test jig that lets you run the server on your lo
 ### ESP8266
 ```mermaid
 graph LR;
-subgraph x
+subgraph IOT
         main.py
-        WebServer-ESP[WebServer]
         Pin
         Servo
-        PeriodicOperator[Periodic Operator]
         Timer
-        Toggle
+        Toggle[Toggle Callback]
+        PeriodicOperator[Periodic Operator]
+        WebServer-ESP[WebServer]
 
     main.py -.->|"Instantiate"| Pin
     main.py -.->|"Instantiate"| Servo
+    main.py -.->|"Instantiate"| Timer
+    main.py -.->|"Instantiate"| Toggle
     main.py -.->|"Instantiate(Timer, Callback)"| PeriodicOperator
     main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer-ESP
     main.py --> |"Execute"| WebServer-ESP
-
-    PeriodicOperator -.->|starts/stops| Timer
-    PeriodicOperator -.->|references| Toggle
-    Timer --->|"Invokes toggle as callback"| Toggle
+    main.py --> |"start/stop"| PeriodicOperator
+    PeriodicOperator --> |"start/stop"| Timer
+    Timer -->            |"Invokes toggle as callback"| Toggle
 end
 ```
 ### Developer Machine
 ```mermaid
 graph LR;
-subgraph x
+subgraph Test
         webserver_test.py
-        WebServer-Dev[WebServer]
         FakePin
         FakeServo
-        PeriodicOperatorF[Periodic Operator]
         FakeTimer
-        ToggleF[Toggle]
+        Toggle[Toggle Callback]
+        PeriodicOperator[Periodic Operator]
+        WebServer-Dev[WebServer]
 
     webserver_test.py -.->|"Instantiate"|FakePin
     webserver_test.py -.->|"Instantiate"|FakeServo
-    webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperatorF
+    webserver_test.py -.->|"Instantiate"| FakeTimer
+    webserver_test.py -.->|"Instantiate"| Toggle
+    webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperator
     webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
     webserver_test.py --> |"Execute"|WebServer-Dev
-
-    PeriodicOperatorF -.->|"starts/stops"|FakeTimer
-    PeriodicOperatorF -.->|references|ToggleF
-    FakeTimer -->|"Invoke not implemented"| ToggleF
+    webserver_test.py --> |"start/stop"| PeriodicOperator
+    PeriodicOperator --> |"start/stop"|FakeTimer
+    FakeTimer -->        |"Invoke not implemented"| Toggle
 end
 ```
 
