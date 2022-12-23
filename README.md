@@ -99,23 +99,23 @@ This repository also contains a test jig that lets you run the server on your lo
 ### ESP8266
 ```mermaid
 graph LR;
-subgraph IOT
+subgraph IOT Device
         main.py
         Pin
         Servo
+        PeriodicOperator[Periodic Operator]
         Timer
         Toggle[Toggle Callback]
-        PeriodicOperator[Periodic Operator]
-        WebServer-ESP[WebServer]
+        WebServer[WebServer ESP]
 
     main.py -.->|"Instantiate"| Pin
     main.py -.->|"Instantiate"| Servo
     main.py -.->|"Instantiate"| Timer
     main.py -.->|"Instantiate"| Toggle
     main.py -.->|"Instantiate(Timer, Callback)"| PeriodicOperator
-    main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer-ESP
-    main.py --> |"Execute"| WebServer-ESP
-    main.py --> |"start/stop"| PeriodicOperator
+    main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer
+    main.py --> |"Execute"| WebServer
+
     PeriodicOperator --> |"start/stop"| Timer
     Timer -->            |"Invokes toggle as callback"| Toggle
 end
@@ -123,25 +123,26 @@ end
 ### Developer Machine
 ```mermaid
 graph LR;
-subgraph Test
+subgraph Developer Machine
         webserver_test.py
         FakePin
         FakeServo
+        PeriodicOperator[Periodic Operator]
         FakeTimer
         Toggle[Toggle Callback]
-        PeriodicOperator[Periodic Operator]
-        WebServer-Dev[WebServer]
+        WebServer[WebServer Dev]
 
     webserver_test.py -.->|"Instantiate"|FakePin
     webserver_test.py -.->|"Instantiate"|FakeServo
     webserver_test.py -.->|"Instantiate"| FakeTimer
     webserver_test.py -.->|"Instantiate"| Toggle
     webserver_test.py -.->|"Instantiate(FakeTimer, Callback)"|PeriodicOperator
-    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [])"|WebServer-Dev
-    webserver_test.py --> |"Execute"|WebServer-Dev
-    webserver_test.py --> |"start/stop"| PeriodicOperator
-    PeriodicOperator --> |"start/stop"|FakeTimer
+    webserver_test.py -.->|"Instantiate([FakePin], [FakeServo], [Periodic])"|WebServer
+    webserver_test.py --> |"Execute"|WebServer
+
+    PeriodicOperator  --> |"start/stop"|FakeTimer
     FakeTimer -->        |"Invoke not implemented"| Toggle
+
 end
 ```
 
