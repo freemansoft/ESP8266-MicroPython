@@ -129,18 +129,18 @@ graph TD;
 subgraph IOT Device
     main.py
     WebServer[WebServer ESP]
-    main.py --> |"start"| WebServer
+    main.py --> |"run_server()"| WebServer
 
     WebServer2[WebServer ESP]
     PeriodicOperator[Periodic Operator]
     Timer
-    WebServer2 --> |"start/stop"| PeriodicOperator
-    PeriodicOperator --> |"start/stop"| Timer
+    WebServer2 --> |"start()/stop()"| PeriodicOperator
+    PeriodicOperator --> |"init()/deinit()"| Timer
 
     Timer2[Timer]
     Toggle[Toggle Callback]
     Timer2 --> |"Timer Event"| Timer2
-    Timer2 --> |"Invokes toggle as callback"| Toggle
+    Timer2 --> |"Invokes callback(t)"| Toggle
 end
 ```
 
