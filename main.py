@@ -6,7 +6,8 @@ from config import web_repl_password
 from connectwifi import WIFI
 from webserver import WebServer
 from flashpin import flash_pin
-from toggle import TogglePin
+from togglepin import TogglePin
+from servosweep import ServoSweep
 from servo import Servo
 from httpget import http_get_print
 from periodicoperator import PeriodicOperator
@@ -19,21 +20,30 @@ micropython.alloc_emergency_exception_buf(100)
 
 def main():
 
-    # basically flashing every 1 seconds
-    a_periodic_handler = TogglePin(Pin(2, Pin.OUT))
-    a_periodic_operator = PeriodicOperator(
-        Timer(-1), 500, a_periodic_handler.toggle_pin_callback
+    # flash 1/sec
+    periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+    periodic_operator = PeriodicOperator(
+        Timer(-1), 500, periodic_handler.toggle_pin_callback
     )
+    periodic_label = "Flashing LED"
+
+    # sweep back and forth
+    # periodic_handler = ServoSweep(Servo(Pin(14)), micropython.schedule)
+    # periodic_operator = PeriodicOperator(
+    #     Timer(-1), 2000, periodic_handler.sweep_callback
+    # )
+    # periodic_label = "Servo Sweep"
 
     """lets us test main() without board reset"""
     pin_to_toggle = Pin(2, Pin.OUT)
-    flash_pin(pin_to_toggle, 300, 3)
+    flash_pin(pin_to_toggle, 300, 1)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     ipinfo_sta = conn.do_connect()
     ipinfo_ap = conn.log_ap_state()
-    flash_pin(pin_to_toggle, 300, 4)
+    flash_pin(pin_to_toggle, 300, 2)
     print("STA network config:", ipinfo_sta)
     print("AP  network config:", ipinfo_ap)
+    flash_pin(pin_to_toggle, 300, 3)
 
     # http_get_print("http://micropython.org/ks/test.html")
 
@@ -49,8 +59,8 @@ def main():
         [Servo(Pin(14))],
         ["Servo (P 14)"],
         [Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]],
-        [a_periodic_operator],
-        ["Flash LED"],
+        [periodic_operator],
+        [periodic_label],
         "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
     )
     server.run_server()

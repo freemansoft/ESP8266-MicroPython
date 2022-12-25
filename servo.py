@@ -20,6 +20,9 @@ class Servo:
     """
 
     def __init__(self, pin, freq=50, min_us=600, max_us=2400, angle=180):
+        """
+        ;param angle: maximum angle
+        """
         self.pin = pin
         self.min_us = min_us
         self.max_us = max_us

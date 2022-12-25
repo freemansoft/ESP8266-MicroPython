@@ -85,9 +85,10 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp connectwifi.py /pyboard
     cp httpget.py /pyboard
     cp main.py /pyboard
+    cp periodicoperator.py /pyboard
     cp servo.py / pyboard
     cp flashpin.py /pyboard
-    cp toggle.py /pyboard
+    cp togglepin.py /pyboard
     cp webserver.py /pyboard
     ```
 
@@ -116,31 +117,6 @@ subgraph IOT Device
     main.py -.->|"Instantiate([Pin], [Servo], [Periodic])"| WebServer
     main.py --> |"Execute"| WebServer
 
-end
-```
-### Timer Behavior
-The timer basically has 3 phases
-1. Initialize the web server
-1. Start and Stop the Timer
-1. Invoke callback on timer interrupt
-
-```mermaid
-graph TD;
-subgraph IOT Device
-    main.py
-    WebServer[WebServer ESP]
-    main.py --> |"run_server()"| WebServer
-
-    WebServer2[WebServer ESP]
-    PeriodicOperator[Periodic Operator]
-    Timer
-    WebServer2 --> |"start()/stop()"| PeriodicOperator
-    PeriodicOperator --> |"init()/deinit()"| Timer
-
-    Timer2[Timer]
-    Toggle[Toggle Callback]
-    Timer2 --> |"Timer Event"| Timer2
-    Timer2 --> |"Invokes callback(t)"| Toggle
 end
 ```
 
@@ -245,8 +221,40 @@ sequenceDiagram
     deactivate Browser
 
 ```
-# Periodic Operator
-This project includes wrapper that binds a `Periodic Timer` with a `Callback Function`. The operator exists to provide a single object that can be passed into other modules. like the web server in this project.  
+
+# Timed Behavior
+There is a timed event handler demonstration in the code.  It is all drivern by a Timer callback.  
+
+There is only one virtual timer on an ESP8266 so only one timed callback can be invoked. The includes a pin toggler and a servo sweeper.  Enable one or the other in main.py
+
+The example Timer pieces have 3 main phases.
+1. Inject a timer and callback into the web server
+1. Start and Stop the Timer via web request which map to init() and deinit()
+1. Invoke callback() on timer interrupt
+
+```mermaid
+graph TD;
+subgraph IOT Device
+    main.py
+    WebServer[WebServer ESP]
+    main.py --> |"run_server()"| WebServer
+
+    WebServer2[WebServer ESP]
+    PeriodicOperator[Periodic Operator]
+    Timer
+    WebServer2 --> |"start()/stop()"| PeriodicOperator
+    PeriodicOperator --> |"init()/deinit()"| Timer
+
+    Timer2[Timer]
+    Toggle[Toggle Callback]
+    Timer2 --> |"Timer Event"| Timer2
+    Timer2 --> |"Invokes callback(t)"| Toggle
+end
+```
+
+
+## Periodic Operator
+This project includes wrapper that binds a `Periodic Timer` with a `Callback Function`. The operator exists to provide a single object that can be injected into other module like the web server in this project.  
 
 ```mermaid
 graph LR;

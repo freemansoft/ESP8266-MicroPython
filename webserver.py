@@ -187,8 +187,9 @@ class WebServer(object):
 
     def _free_mem(self):
         try:
+            # 22K was the number before using timer callbacks
             # emperical number for ESP8266
-            if gc.mem_free() < 20000:
+            if gc.mem_free() < 15000:
                 print(
                     "pre-free used:"
                     + str(gc.mem_alloc())

@@ -9,7 +9,8 @@ from tests.testfaketimer import FakeTimer
 from webserver import WebServer
 from unittest import TestCase
 from periodicoperator import PeriodicOperator
-from toggle import TogglePin
+from togglepin import TogglePin
+from servosweep import ServoSweep
 
 # This horrible thing is not really a test because it never ends!
 # TODO figure out a way to bring up the server, run tests and then tear down the server
@@ -25,11 +26,15 @@ def test_run_server():
     servo_labels = ["Servo 14"]
     out_pins_all = [pin1, pin2, pin3]
 
-    a_periodic_handler = TogglePin(pin2)
+    a_periodic_pin_handler = TogglePin(pin2)
+    a_periodic_servo_handler = ServoSweep(servo_pins[0])
     periodic_operators = [
-        PeriodicOperator(FakeTimer(-1), 500, a_periodic_handler.toggle_pin_callback)
+        PeriodicOperator(
+            FakeTimer(-1), 500, a_periodic_pin_handler.toggle_pin_callback
+        ),
+        PeriodicOperator(FakeTimer(-2), 500, a_periodic_servo_handler.sweep_callback),
     ]
-    periodic_labels = ["my fake timer control"]
+    periodic_labels = ["my fake pin timer", "my fake servo timer"]
 
     server = WebServer(
         out_pins,
