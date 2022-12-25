@@ -14,7 +14,7 @@ class TogglePin:
     def toggle_pin(self, _):
         """Actual callback target run via schedule(). Can be used directly if no allocations. We don't use the timer anyway"""
         self.target.value(not self.target.value())
-        # this allocates memory can uncomment if invoked via schedule()
+        # Does this allocate memory? If not, then can uncomment if invoked via schedule()
         print("toggle callback %s" % (str(self.target.value())))
 
     def toggle_pin_callback(self, t):
