@@ -314,7 +314,8 @@ sequenceDiagram
 
 ```
 
-
+## ServoSweep Callback Relies on Schedule.
+The servo sweep example has some math and other operations.  That code may not be safe so the servosweep callback handler uses `machine.schedule()` to push the servo targeting work back onto the main thread where heap allocations can occure.  The `togglepin.py` and `servosweep.py` both do this the same way with the same callback function tname.
 
 # Open Issues - TODO
 Run Time
