@@ -17,7 +17,7 @@ class TogglePin:
         # Does this allocate memory? If not, then can uncomment if invoked via schedule()
         print("toggle callback %s" % (str(self.target.value())))
 
-    def toggle_pin_callback(self, t):
+    def irq_callback(self, t):
         """Callback will schedule() an allocated toggle_pin() if schedule() provided at init"""
         if self.schedule:
             self.schedule(self.toggle_pin_ref, 0)

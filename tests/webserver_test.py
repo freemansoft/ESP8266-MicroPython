@@ -29,10 +29,8 @@ def test_run_server():
     a_periodic_pin_handler = TogglePin(pin2)
     a_periodic_servo_handler = ServoSweep(servo_pins[0])
     periodic_operators = [
-        PeriodicOperator(
-            FakeTimer(-1), 500, a_periodic_pin_handler.toggle_pin_callback
-        ),
-        PeriodicOperator(FakeTimer(-2), 500, a_periodic_servo_handler.sweep_callback),
+        PeriodicOperator(FakeTimer(-1), 500, a_periodic_pin_handler.irq_callback),
+        PeriodicOperator(FakeTimer(-2), 500, a_periodic_servo_handler.irq_callback),
     ]
     periodic_labels = ["my fake pin timer", "my fake servo timer"]
 

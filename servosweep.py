@@ -25,7 +25,7 @@ class ServoSweep:
         # this allocates memory can uncomment if invoked via schedule()
         print("sweeping to %s" % (str(self.angle)))
 
-    def sweep_callback(self, t):
+    def irq_callback(self, t):
         """Callback will schedule() an allocated sweep() if schedule() provided at init"""
         if self.schedule:
             self.schedule(self.sweep_ref, 0)

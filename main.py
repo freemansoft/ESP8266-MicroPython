@@ -23,15 +23,13 @@ def main():
 
     # flash 1/sec
     periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
-    periodic_operator = PeriodicOperator(
-        Timer(-1), 500, periodic_handler.toggle_pin_callback
-    )
+    periodic_operator = PeriodicOperator(Timer(-1), 500, periodic_handler.irq_callback)
     periodic_label = "Flashing LED"
 
     # sweep back and forth
     # periodic_handler = ServoSweep(Servo(Pin(14)), micropython.schedule)
     # periodic_operator = PeriodicOperator(
-    #     Timer(-1), 2000, periodic_handler.sweep_callback
+    #     Timer(-1), 2000, periodic_handler.irq_callback
     # )
     # periodic_label = "Servo Sweep"
 
