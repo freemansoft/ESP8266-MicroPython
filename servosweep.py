@@ -22,7 +22,7 @@ class ServoSweep:
         else:
             self.target.write_angle(0)
             self.angle = 0
-        # this allocates memory can uncomment if invoked via schedule()
+        # Does this allocate memory? Does this require schedule()?
         print("sweeping to %s" % (str(self.angle)))
 
     def irq_callback(self, t):
