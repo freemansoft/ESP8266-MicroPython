@@ -1,6 +1,3 @@
-import time
-
-
 class ServoSweep:
     """A sample target class that gets invoked as a timer callback"""
 

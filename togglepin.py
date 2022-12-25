@@ -1,6 +1,3 @@
-import time
-
-
 class TogglePin:
     """A sample target class that gets invoked as a timer callback"""
 

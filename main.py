@@ -1,4 +1,7 @@
 from machine import Pin, Signal, Timer
+import micropython
+
+
 from config import wifi_ssid, wifi_password, hostname
 from config import web_repl_password
 
@@ -11,8 +14,6 @@ from servosweep import ServoSweep
 from servo import Servo
 from httpget import http_get_print
 from periodicoperator import PeriodicOperator
-
-import micropython
 
 # timer/interrupt exception buffer
 micropython.alloc_emergency_exception_buf(100)
