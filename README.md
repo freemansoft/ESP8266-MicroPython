@@ -270,6 +270,7 @@ graph LR;
 
 ```
 
+## Timer Callback
 1. Create a Timer
 1. Create a Callback function
 1. Create an Operator containinging both
@@ -305,7 +306,7 @@ sequenceDiagram
     opt Timer roll over
         activate Timer
         Timer ->>Timer: "timer IRQ"
-        Timer->>Callback: execute
+        Timer->>Callback: execute()
         activate Callback
         Callback ->> Callback: process
         deactivate Callback
@@ -314,8 +315,9 @@ sequenceDiagram
 
 ```
 
-## ServoSweep Callback Relies on Schedule.
-The servo sweep example has some math and other operations.  That code may not be safe so the servosweep callback handler uses `machine.schedule()` to push the servo targeting work back onto the main thread where heap allocations can occure.  The `togglepin.py` and `servosweep.py` both do this the same way with the same callback function tname.
+## Scheduled Callback Deferral 
+
+ServoSweep Callback relies on deferred execution because it allocates memory. The servo sweep example has some math and other operations.  That code may not be safe so the servosweep callback handler uses `machine.schedule()` to push the servo targeting work back onto the main thread where heap allocations can occure.  The `togglepin.py` and `servosweep.py` both do this the same way with the same callback function tname.
 
 ```mermaid
 sequenceDiagram
