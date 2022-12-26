@@ -180,42 +180,62 @@ sequenceDiagram
     main ->> config: loads
         activate main
         main ->> connectwifi: new(wifi_ssid,pasword,hostname)
+        activate connectwifi
         main ->> connectwifi: connect
         connectwifi ->> network: dhcp_request
+        activate network
         network -->> connectwifi: IP address
+        deactivate network
+        deactivate connectwifi
         deactivate main
     
         main ->> webserver: new(control_pin as signal,control_pin_labels,monitor_pin_nums)
         activate main
         main ->> webserver: run()
         deactivate main
-    webserver ->> webserver: listen on socket
+    
+        webserver ->> webserver: listen on socket
     deactivate main
 ```
 
 # Web Request / Response
 
+The webserver accepts GET requests and updates the devices I/O peripherals based on the query parameters.
+
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant ESP8266
+    participant ESP8266 as ESP8266 Webserver
     participant LED
     participant Relay
     participant PeriodicOperator
+    participant Timer
 
-    activate Browser
     Browser->>ESP8266: HTTP GET
+    activate Browser
     activate ESP8266
     ESP8266->>ESP8266: Evaluate Query Parameters
     opt Valid LED Parameters Exist
         ESP8266->>LED: Toggle On/Off
+        activate ESP8266
+        deactivate ESP8266
     end
+
     opt Valid Relay Parameters Exist
         ESP8266->>Relay: Toggle Open/Close
+        activate ESP8266
+        deactivate ESP8266
     end
+
     opt Valid TimerCallback Parameters Exist
-        ESP8266->>PeriodicOperator: Enable/Disable
+        ESP8266->>PeriodicOperator: enable()/disable()
+        activate ESP8266
+        activate PeriodicOperator
+        PeriodicOperator->>Timer: init()/deinit()
+        deactivate PeriodicOperator
+        deactivate ESP8266
     end
+
     ESP8266-->>Browser: Success 200 and HTML
     deactivate ESP8266
     deactivate Browser
