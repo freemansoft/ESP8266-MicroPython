@@ -11,19 +11,19 @@ class ServoSweep:
         # need to allocate the reference prior to using it in a callback
         self.sweep_ref = self.sweep
         self.schedule = schedule
-        # We really don't know the star
-        self.angle = startangle
+        # This will be wrong if not passed in
+        self.targetangle = startangle
 
     def sweep(self, _):
         """Actual callback target run via schedule(). Can be used directly if no allocations. We don't use the timer anyway"""
-        if self.angle == 0:
+        if self.targetangle == 0:
             self.target.write_angle(180)
-            self.angle = 180
+            self.targetangle = 180
         else:
             self.target.write_angle(0)
-            self.angle = 0
+            self.targetangle = 0
         # Does this allocate memory? Does this require schedule()?
-        print("sweeping to %s" % (str(self.angle)))
+        print("sweeping to %s" % (str(self.targetangle)))
 
     def irq_callback(self, t):
         """Callback will schedule() an allocated sweep() if schedule() provided at init"""

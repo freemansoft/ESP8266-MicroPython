@@ -317,6 +317,51 @@ sequenceDiagram
 ## ServoSweep Callback Relies on Schedule.
 The servo sweep example has some math and other operations.  That code may not be safe so the servosweep callback handler uses `machine.schedule()` to push the servo targeting work back onto the main thread where heap allocations can occure.  The `togglepin.py` and `servosweep.py` both do this the same way with the same callback function tname.
 
+```mermaid
+sequenceDiagram
+    participant Main
+    participant Timer
+    participant IRQ
+    participant Handler as Handler Class
+    participant Schedule as Micropython Schedule
+
+    Note over Main, Handler: Setup
+    Main ->> Handler:"instantiate()"
+    activate Main
+    activate Handler
+    Handler ->> Handler: "create callback_ref"
+    deactivate Handler
+    Main ->> Handler: "get irq_callback"
+    activate Handler
+    Handler -->> Main: "irq_callback"
+    deactivate Handler
+
+    Main ->> Timer: "register(irq_callback)"
+    Main ->> Timer: "init()"
+    deactivate Main
+
+    Note over Main, IRQ: Timer Interrupt Fires
+    Timer ->> IRQ:"interrupt()"
+    activate Timer
+    activate IRQ
+        IRQ ->> Handler:"irq_callback()"
+        activate Handler
+        Handler ->> Schedule:"schedule(callback())"
+        activate Schedule
+        Schedule -->> Timer:"return"
+        deactivate Schedule
+        deactivate Handler
+    deactivate IRQ
+    deactivate Timer
+    
+    Note over Main, Schedule: Deferred action via schedule()
+    Schedule ->>+ Schedule:"idle"
+    Schedule ->> Handler:"callback()"
+    activate Handler
+    deactivate Handler
+    deactivate Schedule
+```
+
 # Open Issues - TODO
 Run Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
