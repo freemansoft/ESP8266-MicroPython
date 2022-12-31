@@ -31,7 +31,7 @@ class WebServer(object):
     def _web_page_html(self):
 
         html = """<html><head> 
-    <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+        <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/black-tie/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
@@ -41,27 +41,42 @@ class WebServer(object):
         h1{color: #0F3376; padding: 2vh;}
         h2{color: #0F3376; padding: 2vh;}
         table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
+        .ui-controlgroup-vertical { width: 150px;  }
         </style>
+        $( function() { 
+            $( ".controlgroup" ).controlgroup() 
+            $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical"    });
+        } );
     </head>
     <body> 
-    <h1>ESP 8266</h1><hr>
-    <h2>Output Pins</h2> 
+    <h1>ESP 8266</h1>
+    <fieldset>
+    <legend>Output Pins</legend> 
     %s
-    <br/>Current state takes into account pin inversion<br/><hr>
-    <h2>Servo Pins</h2> 
+    <br/>Current state takes into account pin inversion<br/>
+    </fieldset>
+
+    <fieldset>
+    <legend>Servo Pins</legend> 
     %s
-    <p></p><hr>
-    <h2>Timed Operations</h2> 
+    </fieldset>
+
+    <fieldset>
+    <legend>Timed Operations</legend> 
     %s
-    <p></p><hr>
-    <h2>Raw Pin State - as read</h2> 
+    </fieldset>
+
+    <fieldset>
+    <legend>Raw Pin State - as read</legend> 
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
-    <br/><hr><br/>%s<br/>
+    </fieldset>
+    
+    <br/>%s<br/>
     </body></html>"""
 
         control_pin_state = "".join(
             [
-                '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?out_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></p>'
+                '<div><label><strong>%s</strong> Currently On: %s</label><br/><a href="?out_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?out_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></div>'
                 % (
                     pin_label,
                     str(control_pin.value()),
@@ -78,7 +93,7 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                '<p><strong>%s</strong> uSec: %d</p> <p><a href="?servo_%d=0"><button class="ui-button ui-widget ui-corner-all">0</button></a><a href="?servo_%d=90"><button class="ui-button ui-widget ui-corner-all">90</button></a><a href="?servo_%d=180"><button class="ui-button ui-widget ui-corner-all">180</button></a></p>'
+                '<div><label><strong>%s</strong> uSec: %d</label><br/><a href="?servo_%d=0"><button class="ui-button ui-widget ui-corner-all">0</button></a><a href="?servo_%d=90"><button class="ui-button ui-widget ui-corner-all">90</button></a><a href="?servo_%d=180"><button class="ui-button ui-widget ui-corner-all">180</button></a></div>'
                 % (
                     servo_label,
                     self.servo_pins[p].us,
@@ -93,7 +108,7 @@ class WebServer(object):
         )
         timer_pin_state = "".join(
             [
-                '<p><strong>%s</strong> Currently Running: %s</p> <p><a href="?period_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?period_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></p>'
+                '<div><label><strong>%s</strong> Currently Running: %s</label><br/><a href="?period_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?period_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></div>'
                 % (
                     periodic_label,
                     str(periodic_op.running()),
