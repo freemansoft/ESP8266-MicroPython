@@ -39,19 +39,24 @@ class WebServer(object):
         <style>
         html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
         h1{color: #0F3376; padding: 2vh;}
-        h2{color: #0F3376; padding: 2vh;}
         table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
-        .ui-controlgroup-vertical { width: 150px;  }
+        .ui-controlgroup-vertical { width: 300px; }
+        .ui-controlgroup.ui-controlgroup-vertical > button.ui-button,
+        .ui-controlgroup.ui-controlgroup-vertical > .ui-controlgroup-label { text-align: center; }
         </style>
-        $( function() { 
-            $( ".controlgroup" ).controlgroup() 
-            $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical"    });
+        <script>
+          $( function() {
+            $( ".controlgroup" ).controlgroup()
+            $( ".controlgroup-vertical" ).controlgroup({
+            "direction": "vertical"
+            });
         } );
+        </script>
     </head>
     <body> 
     <h1>ESP 8266</h1>
     <fieldset>
-    <legend>Output Pins</legend> 
+    <legend>Output Pins</legend>
     %s
     <br/>Current state takes into account pin inversion<br/>
     </fieldset>
