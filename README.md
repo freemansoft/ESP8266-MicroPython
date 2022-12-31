@@ -558,6 +558,12 @@ Web Server Examples some based on the same core
 rshell
 * https://github.com/dhylands/rshell
 
+jquery / javascript
+* I forgot to capture some of these that helped
+* https://stackoverflow.com/questions/5376431/wildcards-in-jquery-selectors
+* https://stackoverflow.com/questions/10640159/key-for-javascript-dictionary-is-not-stored-as-value-but-as-variable-name
+* https://api.jquery.com/jquery.get/
+
 Other : Wemos D1 cause that is compatible with the board I tested with.
 * https://www.wemos.cc/en/latest/tutorials/d1/get_started_with_micropython_d1.html
 * https://www.instructables.com/MicroPython-IoT-Rover-Based-on-WeMos-D1-ESP-8266EX/

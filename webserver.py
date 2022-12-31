@@ -30,45 +30,51 @@ class WebServer(object):
 
     def _web_page_html(self):
 
-        html = """<html><head> 
+        html = """<html>
+    <head> 
         <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/black-tie/jquery-ui.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
         <style>
         html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
-        h1{color: #0F3376; padding: 2vh;}
         table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
-        .ui-controlgroup-vertical { width: 300px; }
+
+        .ui-controlgroup-vertical { width: 500px; }
         .ui-controlgroup.ui-controlgroup-vertical > button.ui-button,
         .ui-controlgroup.ui-controlgroup-vertical > .ui-controlgroup-label { text-align: center; }
         </style>
         <script>
-          $( function() {
-            $( ".controlgroup" ).controlgroup()
-            $( ".controlgroup-vertical" ).controlgroup({
-            "direction": "vertical"
-            });
-        } );
+            $( function() { $( ".controlgroup" ).controlgroup(); $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical" }); } );
+            /* callback that generates a GET request using the id as the key */
+            function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
+            /* replaces every div=servo... with the jquery slider */
+            $(document).ready(function(){ $('[id^=servo_]').slider({min: 0, max:180, change:changeServo}); });
         </script>
     </head>
     <body> 
     <h1>ESP 8266</h1>
     <fieldset>
     <legend>Output Pins</legend>
+    <div class=controlgroup-vertical>
     %s
+    </div>
     <br/>Current state takes into account pin inversion<br/>
     </fieldset>
 
     <fieldset>
     <legend>Servo Pins</legend> 
+    <div class=controlgroup-vertical>
     %s
+    </div>
     </fieldset>
 
     <fieldset>
     <legend>Timed Operations</legend> 
+    <div class=controlgroup-vertical>
     %s
+    </div>
     </fieldset>
 
     <fieldset>
@@ -81,7 +87,7 @@ class WebServer(object):
 
         control_pin_state = "".join(
             [
-                '<div><label><strong>%s</strong> Currently On: %s</label><br/><a href="?out_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?out_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></div>'
+                '<div><label><strong>%s</strong> Currently On: %s</label><br/><a href="?out_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?out_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
                 % (
                     pin_label,
                     str(control_pin.value()),
@@ -98,12 +104,10 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                '<div><label><strong>%s</strong> uSec: %d</label><br/><a href="?servo_%d=0"><button class="ui-button ui-widget ui-corner-all">0</button></a><a href="?servo_%d=90"><button class="ui-button ui-widget ui-corner-all">90</button></a><a href="?servo_%d=180"><button class="ui-button ui-widget ui-corner-all">180</button></a></div>'
+                "<div><label><strong>%s</strong> uSec: %d</label><div id=servo_%d></div></div>"
                 % (
                     servo_label,
                     self.servo_pins[p].us,
-                    p,
-                    p,
                     p,
                 )
                 for p, servo_label in enumerate(
@@ -113,7 +117,7 @@ class WebServer(object):
         )
         timer_pin_state = "".join(
             [
-                '<div><label><strong>%s</strong> Currently Running: %s</label><br/><a href="?period_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?period_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></div>'
+                '<div><label><strong>%s</strong> Currently Running: %s</label><br/><a href="?period_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?period_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
                 % (
                     periodic_label,
                     str(periodic_op.running()),
