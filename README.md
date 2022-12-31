@@ -387,6 +387,7 @@ sequenceDiagram
 # Open Issues - TODO
 Run Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
+1. Disable HTML page generation if the caller doesn't accept HTML
 1. Portal on first boot to enter network credentials not supported
 1. Web UI
     1. Initialize slider in the web page with value the system thinks the slider is at when page is built
