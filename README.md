@@ -570,3 +570,118 @@ Other: General
 * https://github.com/pvanallen/esp32-getstarted/blob/master/examples/servo.py
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
 
+
+# Example MicroPython ESP32C3 Micropython 1.9.1
+This is an example of the flashing and verification process.  I used `esptool.py` flash the device and `rshell` to interrogate it.
+
+## Flash MicroPython to ESP32C3
+
+```
+PS C:...> esptool.py --chip esp32c3 --port COM19 erase_flash
+esptool.py v4.3
+Serial port COM19
+Connecting...
+Chip is ESP32-C3 (revision v0.4)
+Features: WiFi, BLE
+Crystal is 40MHz
+MAC: 34:85:18:26:f0:78
+Uploading stub...
+Running stub...
+Stub running...
+Erasing flash (this may take a while)...
+Chip erase completed successfully in 19.4s
+Hard resetting via RTS pin...
+PS C:...> esptool.py --chip esp32c3 --port COM19 --baud 460800 write_flash -z 0x0 esp32c3-usb-20220618-v1.19.1.bin
+esptool.py v4.3
+Serial port COM19
+Connecting...
+Chip is ESP32-C3 (revision v0.4)
+Features: WiFi, BLE
+Crystal is 40MHz
+MAC: 34:85:18:26:f0:78
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x0015dfff...
+Compressed 1431808 bytes to 868690...
+Wrote 1431808 bytes (868690 compressed) at 0x00000000 in 20.0 seconds (effective 572.4 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+```
+
+## Verify Board ESP32C3
+
+```
+C:\...> repl
+Entering REPL. Use Control-X to exit.
+>
+MicroPython v1.19.1 on 2022-06-18; ESP32C3 module with ESP32C3
+Type "help()" for more information.
+>>> help('modules')
+__main__          framebuf          uasyncio/stream   uplatform
+_boot             gc                ubinascii         urandom
+_onewire          inisetup          ubluetooth        ure
+_thread           math              ucollections      uselect
+_uasyncio         micropython       ucryptolib        usocket
+_webrepl          neopixel          uctypes           ussl
+apa106            network           uerrno            ustruct
+btree             ntptime           uhashlib          usys
+builtins          onewire           uheapq            utime
+cmath             uarray            uio               utimeq
+dht               uasyncio/__init__ ujson             uwebsocket
+ds18x20           uasyncio/core     umachine          uzlib
+esp               uasyncio/event    uos               webrepl
+esp32             uasyncio/funcs    upip              webrepl_setup
+flashbdev         uasyncio/lock     upip_utarfile     websocket_helper
+Plus any modules on the filesystem
+
+>>> import machine
+>>> dir(machine)
+['__class__', '__name__', 'ADC', 'ADCBlock', 'DEEPSLEEP', 'DEEPSLEEP_RESET', 'EXT0_WAKE', 'EXT1_WAKE', 'HARD_RESET', 'I2C', 'PIN_WAKE', 'PWM', 'PWRON_RESET', 'Pin', 'RTC', 'SLEEP', 'SOFT_RESET', 'SPI', 'Signal', 'SoftI2C', 'SoftSPI', 'TIMER_WAKE', 'TOUCHPAD_WAKE', 'Timer', 'UART', 'ULP_WAKE', 'WDT', 'WDT_RESET', 'bitstream', 'deepsleep', 'disable_irq', 'enable_irq', 'freq', 'idle', 'lightsleep', 'mem16', 'mem32', 'mem8', 'reset', 'reset_cause', 'sleep', 'soft_reset', 'time_pulse_us', 'unique_id', 'wake_reason']
+
+>>> dir('esp')
+['__class__', 'count', 'endswith', 'find', 'format', 'index', 'isalpha', 'isdigit', 'islower', 'isspace', 'isupper', 'join', 'lower', 'lstrip', 'replace', 'rfind', 'rindex', 'rsplit', 'rstrip', 'split', 'startswith', 'strip', 'upper', 'center', 'encode', 'partition', 'rpartition', 'splitlines']
+
+>>> dir('esp32')
+['__class__', 'count', 'endswith', 'find', 'format', 'index', 'isalpha', 'isdigit', 'islower', 'isspace', 'isupper', 'join', 'lower', 'lstrip', 'replace', 'rfind', 'rindex', 'rsplit', 'rstrip', 'split', 'startswith', 'strip', 'upper', 'center', 'encode', 'partition', 'rpartition', 'splitlines']
+```
+
+## Verify Board ESP8266
+
+```
+C:\...> repl
+Entering REPL. Use Control-X to exit.
+>
+MicroPython v1.19.1 on 2022-06-18; ESP module with ESP8266
+Type "help()" for more information.
+>>>
+>>> help('modules')
+__main__          math              ucollections      ure
+_boot             micropython       ucryptolib        urequests
+_onewire          neopixel          uctypes           urllib/urequest
+_uasyncio         network           uerrno            uselect
+_webrepl          ntptime           uhashlib          usocket
+apa102            onewire           uheapq            ussl
+btree             port_diag         uio               ustruct
+builtins          ssd1306           ujson             usys
+dht               uarray            umachine          utime
+ds18x20           uasyncio/__init__ umqtt/robust      utimeq
+esp               uasyncio/core     umqtt/simple      uwebsocket
+flashbdev         uasyncio/event    uos               uzlib
+framebuf          uasyncio/funcs    upip              webrepl
+gc                uasyncio/lock     upip_utarfile     webrepl_setup
+inisetup          uasyncio/stream   upysh             websocket_helper
+lwip              ubinascii         urandom
+Plus any modules on the filesystem
+>>> import machine
+>>> dir(machine)
+['__class__', '__name__', 'ADC', 'DEEPSLEEP', 'DEEPSLEEP_RESET', 
+'HARD_RESET', 'I2C', 'PWM', 'PWRON_RESET', 'Pin', 'RTC', 'SOFT_RESET', 'SPI', 'Signal', 'SoftI2C', 'SoftSPI', 'Timer', 'UART', 'WDT', 'WDT_RESET', 'bitstream', 'deepsleep', 'disable_irq', 'enable_irq', 'freq', 'idle', 'lightsleep', 'mem16', 'mem32', 'mem8', 'reset', 'reset_cause', 'sleep', 'soft_reset', 'time_pulse_us', 'unique_id']
+>>>
+
+```

@@ -30,15 +30,19 @@ class WebServer(object):
 
     def _web_page_html(self):
 
-        html = """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
-    <style>
-    html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
-    h1{color: #0F3376; padding: 2vh;}
-    p{font-size: 1.5rem;}
-    .button{display: inline-block; background-color: #e7bd3b; border: none; border-radius: 4px; color: white; padding: 16px 20px; text-decoration: none; font-size: 20px; margin: 2px; cursor: pointer;}
-    .button2{background-color: #4286f4;} 
-    table {border-collapse: collapse; display:inline-block; margin: 5px auto; text-align: center;} tr {border-bottom: 1px solid #ddd; font-size: 1.0rem;} td { padding: 10px;}
-    </style></head>
+        html = """<html><head> 
+    <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/black-tie/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+        <style>
+        html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
+        h1{color: #0F3376; padding: 2vh;}
+        h2{color: #0F3376; padding: 2vh;}
+        table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
+        </style>
+    </head>
     <body> 
     <h1>ESP 8266</h1><hr>
     <h2>Output Pins</h2> 
@@ -57,7 +61,7 @@ class WebServer(object):
 
         control_pin_state = "".join(
             [
-                '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%d=on"><button class="button button">ON</button></a><a href="?out_%d=off"><button class="button button2">OFF</button></a></p>'
+                '<p><strong>%s</strong> Currently On: %s</p> <p><a href="?out_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?out_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></p>'
                 % (
                     pin_label,
                     str(control_pin.value()),
@@ -74,7 +78,7 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                '<p><strong>%s</strong> uSec: %d</p> <p><a href="?servo_%d=0"><button class="button button">0</button></a><a href="?servo_%d=90"><button class="button button2">90</button></a><a href="?servo_%d=180"><button class="button button">180</button></a></p>'
+                '<p><strong>%s</strong> uSec: %d</p> <p><a href="?servo_%d=0"><button class="ui-button ui-widget ui-corner-all">0</button></a><a href="?servo_%d=90"><button class="ui-button ui-widget ui-corner-all">90</button></a><a href="?servo_%d=180"><button class="ui-button ui-widget ui-corner-all">180</button></a></p>'
                 % (
                     servo_label,
                     self.servo_pins[p].us,
@@ -89,7 +93,7 @@ class WebServer(object):
         )
         timer_pin_state = "".join(
             [
-                '<p><strong>%s</strong> Currently Running: %s</p> <p><a href="?period_%d=on"><button class="button button">ON</button></a><a href="?period_%d=off"><button class="button button2">OFF</button></a></p>'
+                '<p><strong>%s</strong> Currently Running: %s</p> <p><a href="?period_%d=on"><button class="ui-button ui-widget ui-corner-all">ON</button></a><a href="?period_%d=off"><button class="ui-button ui-widget ui-corner-all">OFF</button></a></p>'
                 % (
                     periodic_label,
                     str(periodic_op.running()),
@@ -106,7 +110,7 @@ class WebServer(object):
         )
         # labels and values on own rows
         monitor_pin_number = "".join(
-            ["<td> %s </td>" % (str(p)) for p in self.pins_to_monitor]
+            ["<th> %s </hd>" % (str(p)) for p in self.pins_to_monitor]
         )
         monitor_pin_state = "".join(
             ["<td> %d </td>" % (p.value()) for p in self.pins_to_monitor]
