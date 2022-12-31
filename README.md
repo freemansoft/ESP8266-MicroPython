@@ -388,6 +388,10 @@ sequenceDiagram
 Run Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
 1. Portal on first boot to enter network credentials not supported
+1. Web UI
+    1. Initialize slider in the web page with value the system thinks the slider is at when page is built
+    1. Sync the slider to the value shown in the page currently for the slider
+    1. Slider is the only AJAX call that doesn't refresh page so weird different behavior - probably should refresh to be accurate
 
 Development Time
 1. Must manually create config.py and populate with the values.
@@ -576,6 +580,8 @@ Other: General
 * https://github.com/pvanallen/esp32-getstarted/blob/master/examples/servo.py
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
 
+W3C
+* https://www.w3schools.com/colors/colors_names.asp
 
 # Example MicroPython ESP32C3 Micropython 1.9.1
 This is an example of the flashing and verification process.  I used `esptool.py` flash the device and `rshell` to interrogate it.

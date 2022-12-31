@@ -29,6 +29,9 @@ class WebServer(object):
         self.message = message
 
     def _web_page_html(self):
+        # jquery callback that generates a GET request using the id as the key
+        # jquery.ready() replaces every div=servo... with the jquery slider
+        # Need to turn of logging to increase performance
 
         html = """<html>
     <head> 
@@ -40,45 +43,33 @@ class WebServer(object):
         <style>
         html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
         table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
-
+        body { background-color: lightgrey; }
         .ui-controlgroup-vertical { width: 500px; }
         .ui-controlgroup.ui-controlgroup-vertical > button.ui-button,
         .ui-controlgroup.ui-controlgroup-vertical > .ui-controlgroup-label { text-align: center; }
         </style>
         <script>
             $( function() { $( ".controlgroup" ).controlgroup(); $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical" }); } );
-            /* callback that generates a GET request using the id as the key */
             function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
-            /* replaces every div=servo... with the jquery slider */
             $(document).ready(function(){ $('[id^=servo_]').slider({min: 0, max:180, change:changeServo}); });
         </script>
     </head>
     <body> 
     <h1>ESP 8266</h1>
-    <fieldset>
-    <legend>Output Pins</legend>
+    <fieldset><legend>Output Pins - Current state takes into account pin inversion</legend><div class=controlgroup-vertical>
+    %s
+    </div></fieldset>
+
+    <fieldset><legend>Servo Pins</legend><div class=controlgroup-vertical>
+    %s
+    </div></fieldset>
+
+    <fieldset><legend>Timed Operations</legend> 
     <div class=controlgroup-vertical>
     %s
-    </div>
-    <br/>Current state takes into account pin inversion<br/>
-    </fieldset>
+    </div></fieldset>
 
-    <fieldset>
-    <legend>Servo Pins</legend> 
-    <div class=controlgroup-vertical>
-    %s
-    </div>
-    </fieldset>
-
-    <fieldset>
-    <legend>Timed Operations</legend> 
-    <div class=controlgroup-vertical>
-    %s
-    </div>
-    </fieldset>
-
-    <fieldset>
-    <legend>Raw Pin State - as read</legend> 
+    <fieldset><legend>Raw Pin State - as read</legend> 
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     </fieldset>
     
