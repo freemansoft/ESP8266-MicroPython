@@ -22,8 +22,10 @@ def test_run_server():
     pin3 = FakePin(16)
     out_pins = [FakeSignal(pin1, invert=True), FakeSignal(pin3, invert=False)]
     out_labels = ["LED (Pin 2)", "RELAY (Pin 16)"]
-    servo_pins = [FakeServo(FakePin(14))]
-    servo_labels = ["Servo 14"]
+    servo_pins = [FakeServo(FakePin(14)), FakeServo(FakePin(18))]
+    servo_pins[0].write_angle(120)
+    servo_pins[1].write_angle(30)
+    servo_labels = ["Servo 14", "Servo 18"]
     out_pins_all = [pin1, pin2, pin3]
 
     a_periodic_pin_handler = TogglePin(pin2)

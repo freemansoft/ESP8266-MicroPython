@@ -19,17 +19,20 @@ class Servo:
 
     """
 
-    def __init__(self, pin, freq=50, min_us=600, max_us=2400, angle=180):
+    def __init__(self, pin, freq=50, min_us=600, max_us=2400, max_angle=180):
         """
-        ;param angle: maximum angle
+        resets the servo back to the home position
+        ;param max_angle: maximum angle - min_angle will be 0
         """
         self.pin = pin
         self.min_us = min_us
         self.max_us = max_us
-        self.us = 0
+        self.us = min_us  # set the current usec to the minimum
+        self.degrees = 0  # match the angle to the minimum
         self.freq = freq
-        self.angle = angle
+        self.max_angle = max_angle
         self.pwm = PWM(pin, freq=freq, duty=0)
+        self.write_angle(0)
 
     def __str__(self) -> str:
         return "%s" % (self.pin)
@@ -38,12 +41,14 @@ class Servo:
         """Set the signal to be ``us`` microseconds long. Zero disables it."""
         if us == 0:
             self.pwm.duty(0)
-            self.us = us
+            self.us = 0
+            self.degrees = -1
         else:
             us = min(self.max_us, max(self.min_us, us))
             duty = us * 1024 * self.freq // 1000000
             self.pwm.duty(duty)
             self.us = us
+            # self.degrees=  TODO back into
 
     def write_angle(self, degrees=None, radians=None):
         """Move to the specified angle in ``degrees`` or ``radians``."""
@@ -51,5 +56,7 @@ class Servo:
             degrees = math.degrees(radians)
         degrees = degrees % 360
         total_range = self.max_us - self.min_us
-        us = self.min_us + total_range * degrees // self.angle
+        us = self.min_us + total_range * degrees // self.max_angle
+        # minor hack because we should calculate the degrees from microsecends in write_us()
+        self.degrees = degrees
         self.write_us(us)

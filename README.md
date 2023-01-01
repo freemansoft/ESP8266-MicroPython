@@ -390,7 +390,6 @@ Run Time
 1. Disable HTML page generation if the caller doesn't accept HTML
 1. Portal on first boot to enter network credentials not supported
 1. Web UI
-    1. Initialize slider in the web page with value the system thinks the slider is at when page is built
     1. Sync the slider to the value shown in the page currently for the slider
     1. Slider is the only AJAX call that doesn't refresh page so weird different behavior - probably should refresh to be accurate
 

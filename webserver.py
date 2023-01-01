@@ -51,7 +51,14 @@ class WebServer(object):
         <script>
             $( function() { $( ".controlgroup" ).controlgroup(); $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical" }); } );
             function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
-            $(document).ready(function(){ $('[id^=servo_]').slider({min: 0, max:180, change:changeServo}); });
+            $(document).ready(function(){
+                $('[id^=servo_]').each(
+                    function(){
+                        var currentValue = $(this).text();
+                        $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});
+                    }
+                )
+            });
         </script>
     </head>
     <body> 
@@ -95,11 +102,13 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                "<div><label><strong>%s</strong> uSec: %d</label><div id=servo_%d></div></div>"
+                "<div><label><strong>%s</strong> uSec: %d degrees: %d</label><div id=servo_%d>%d</div></div>"
                 % (
                     servo_label,
                     self.servo_pins[p].us,
+                    self.servo_pins[p].degrees,
                     p,
+                    self.servo_pins[p].degrees,
                 )
                 for p, servo_label in enumerate(
                     self.servo_pin_labels,
