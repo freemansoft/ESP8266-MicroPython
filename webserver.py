@@ -27,6 +27,7 @@ class WebServer(object):
         self.periodic_ops = periodic_ops
         self.periodic_labels = periodic_labels
         self.message = message
+        self.debug_enabled = True
 
     def _web_page_html(self):
         # jquery callback that generates a GET request using the id as the key
@@ -140,7 +141,8 @@ class WebServer(object):
             ["<td> %d </td>" % (p.value()) for p in self.pins_to_monitor]
         )
 
-        # print(monitor_pin_number, '\n', monitor_pin_state)
+        # if self.debug_enabled:
+        #     print(monitor_pin_number, '\n', monitor_pin_state)
         return html % (
             control_pin_state,
             servo_pin_state,
@@ -150,20 +152,25 @@ class WebServer(object):
             self.message,
         )
 
-    def _query_parse(self, query):
+    def _query_parse(self, query, path_with_query):
         """https://techtutorialsx.com/2017/09/29/esp32-micropython-developing-a-simple-url-query-string-parser/"""
         parameters = {}
-        # remove the GET and HTTP portions
+        # remove the GET and HTTP portions looks like
+        #   GET /?x=y&a=b HTTP/1.1
+        # Code doesn't handle alt paths /api/?x=y&a=b
         pStart = query.split(" ")
-        # after /?
-        if not ("/?" in pStart[1]):
+        if not pStart[1].startswith(path_with_query):
+            if self.debug_enabled:
+                print("Request Ignoring path: " + pStart[1])
             return {}
         amperSplit = pStart[1][2:].split("&")
-        # print(amperSplit)
+        # if self.debug_enabled:
+        #     print(amperSplit)
         for element in amperSplit:
             equalSplit = element.split("=")
             parameters[equalSplit[0]] = equalSplit[1]
-        print("Parameters: " + str(parameters))
+        if self.debug_enabled:
+            print("Parameters: " + str(parameters))
         return parameters
 
     def _operate_control_pins(self, parameters):
@@ -171,7 +178,8 @@ class WebServer(object):
         for p, control_pin in enumerate(self.control_pins):
             try:
                 out_value = parameters["out_" + str(p)]
-                print("out_%s %s %s" % (str(p), control_pin, out_value))
+                if self.debug_enabled:
+                    print("out_%s %s %s" % (str(p), control_pin, out_value))
                 if out_value == "on":
                     control_pin.on()
                 elif out_value == "off":
@@ -183,7 +191,8 @@ class WebServer(object):
         for p, servo_pin in enumerate(self.servo_pins):
             try:
                 servo_value = parameters["servo_" + str(p)]
-                print("servo_%s %s %s" % (str(p), servo_pin, servo_value))
+                if self.debug_enabled:
+                    print("servo_%s %s %s" % (str(p), servo_pin, servo_value))
                 servo_pin.write_angle(int(servo_value))
             except KeyError:
                 pass
@@ -193,7 +202,8 @@ class WebServer(object):
         for p, period_func in enumerate(self.periodic_ops):
             try:
                 out_value = parameters["period_" + str(p)]
-                print("out_%s %s %s" % (str(p), self.periodic_labels[p], out_value))
+                if self.debug_enabled:
+                    print("out_%s %s %s" % (str(p), self.periodic_labels[p], out_value))
                 if out_value == "on":
                     period_func.start()
                 elif out_value == "off":
@@ -206,36 +216,40 @@ class WebServer(object):
         line_get = request.split("\n")[0]
         print("Request Processing: %s" % (line_get))
         if line_get.startswith("GET"):
-            parameters = self._query_parse(line_get)
+            parameters = self._query_parse(line_get, "/?")
             self._operate_control_pins(parameters)
             self._operate_servos(parameters)
             self._operate_periodic(parameters)
         else:
-            print("HTTP GET Only.  Ignoring: %s" % line_get)
+            if self.debug_enabled:
+                print("HTTP GET Only.  Ignoring: %s" % line_get)
 
     def _free_mem(self):
         try:
             # 22K was the number before using timer callbacks
             # emperical number for ESP8266
             if gc.mem_free() < 15000:
-                print(
-                    "pre-free used:"
-                    + str(gc.mem_alloc())
-                    + " free:"
-                    + str(gc.mem_free())
-                )
+                if self.debug_enabled:
+                    print(
+                        "pre-free used:"
+                        + str(gc.mem_alloc())
+                        + " free:"
+                        + str(gc.mem_free())
+                    )
                 gc.collect()
-                print(
-                    "post-free used:"
-                    + str(gc.mem_alloc())
-                    + " free:"
-                    + str(gc.mem_free())
-                )
+                if self.debug_enabled:
+                    print(
+                        "post-free used:"
+                        + str(gc.mem_alloc())
+                        + " free:"
+                        + str(gc.mem_free())
+                    )
         except AttributeError:
             print("no memfree in this version of python")
 
     def run_server(self):
         """runs the web server"""
+        # print("run_server")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind(("", 80))
         s.listen(5)
@@ -245,10 +259,12 @@ class WebServer(object):
                 conn, addr = s.accept()
                 # browsers often make an immediate follow up request
                 conn.settimeout(30.0)
-                print("Got a connection from %s" % str(addr))
+                if self.debug_enabled:
+                    print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024).decode()
-                print("Request Bytes:%d " % (len(request)))
-                # print("Request Content:\n%s" % (request))
+                if self.debug_enabled:
+                    print("Request Bytes:%d " % (len(request)))
+                    # print("Request Content:\n%s" % (request))
 
                 self._handle_request(request)
 
@@ -259,7 +275,8 @@ class WebServer(object):
                 )
                 conn.sendall(response_raw)
                 conn.close()
-                print("Connection closed ")
+                if self.debug_enabled:
+                    print("Connection closed ")
                 self._free_mem()
             except OSError as e:
                 conn.close()
