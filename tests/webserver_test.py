@@ -25,7 +25,7 @@ def test_run_server():
     servo_pins = [FakeServo(FakePin(14)), FakeServo(FakePin(18))]
     servo_pins[0].write_angle(120)
     servo_pins[1].write_angle(30)
-    servo_labels = ["Servo 14", "Servo 18"]
+    servo_labels = ["Servo Pan", "Servo Tilt"]
     out_pins_all = [pin1, pin2, pin3]
 
     a_periodic_pin_handler = TogglePin(pin2)
@@ -44,6 +44,7 @@ def test_run_server():
         out_pins_all,
         periodic_operators,
         periodic_labels,
+        "Testing Title",
         "Hello this is the message area",
     )
     print("")

@@ -17,6 +17,7 @@ class WebServer(object):
         monitor_pins,
         periodic_ops,
         periodic_labels,
+        title,
         message,
     ):
         self.control_pins = control_pins
@@ -27,6 +28,7 @@ class WebServer(object):
         self.periodic_ops = periodic_ops
         self.periodic_labels = periodic_labels
         self.message = message
+        self.title = title
         self.debug_enabled = True
 
     def _web_page_html(self):
@@ -36,7 +38,7 @@ class WebServer(object):
 
         html = """<html>
     <head> 
-        <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+        <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
@@ -63,7 +65,7 @@ class WebServer(object):
         </script>
     </head>
     <body> 
-    <h1>ESP 8266</h1>
+    <h1>%s</h1>
     <fieldset><legend>Output Pins - Current state takes into account pin inversion</legend><div class=controlgroup-vertical>
     %s
     </div></fieldset>
@@ -144,6 +146,8 @@ class WebServer(object):
         # if self.debug_enabled:
         #     print(monitor_pin_number, '\n', monitor_pin_state)
         return html % (
+            self.title,
+            self.title,
             control_pin_state,
             servo_pin_state,
             timer_pin_state,
@@ -161,7 +165,7 @@ class WebServer(object):
         pStart = query.split(" ")
         if not pStart[1].startswith(path_with_query):
             if self.debug_enabled:
-                print("Request Ignoring path: " + pStart[1])
+                print("Request Ignoring path:" + pStart[1])
             return {}
         amperSplit = pStart[1][2:].split("&")
         # if self.debug_enabled:
@@ -170,7 +174,7 @@ class WebServer(object):
             equalSplit = element.split("=")
             parameters[equalSplit[0]] = equalSplit[1]
         if self.debug_enabled:
-            print("Parameters: " + str(parameters))
+            print("Parameters:" + str(parameters))
         return parameters
 
     def _operate_control_pins(self, parameters):

@@ -43,11 +43,17 @@ def main():
     if os.uname().machine.startswith("ESP32C3"):
         # (sysname='esp32', nodename='esp32', release='1.19.1', version='v1.19.1 on 2022-06-18', machine='ESP32C3 module with ESP32C3')
         # flash 1/sec
-        periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
-        periodic_operator = PeriodicOperator(
-            Timer(2), 500, periodic_handler.irq_callback
+        periodic_handler1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+        periodic_operator1 = PeriodicOperator(
+            Timer(2), 500, periodic_handler1.irq_callback
         )
-        periodic_label = "Flashing LED (2)"
+        periodic_label1 = "Flashing LED (2)"
+        # sweep back and forth
+        periodic_handler2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        periodic_operator2 = PeriodicOperator(
+            Timer(0), 2000, periodic_handler2.irq_callback
+        )
+        periodic_label2 = "Servo Sweep (4)"
 
         # dummy up the pins for the SeedStudio Xiao ESP32C3 that I have https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
         server = WebServer(
@@ -59,8 +65,9 @@ def main():
             [Servo(Pin(4))],
             ["Servo (P 4)"],
             [Pin(i) for i in [2, 3, 4, 5, 6, 7, 8, 9, 10]],
-            [periodic_operator],
-            [periodic_label],
+            [periodic_operator1, periodic_operator2],
+            [periodic_label1, periodic_label2],
+            "Demo Page: ESP32C3",
             "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
         )
     else:
@@ -79,7 +86,7 @@ def main():
         # )
         # periodic_label = "Servo Sweep"
 
-        # ESP8266
+        # Defaults ESP8266 which is all I have other than ESP32
         server = WebServer(
             [
                 Signal(Pin(2, Pin.OUT), invert=True),
@@ -91,6 +98,7 @@ def main():
             [Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]],
             [periodic_operator],
             [periodic_label],
+            "Demo Page: Possibly ESP8266",
             "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
         )
     server.run_server()
