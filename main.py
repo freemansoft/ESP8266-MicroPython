@@ -1,5 +1,4 @@
 from machine import Pin, Signal, Timer, reset_cause
-import machine
 import micropython
 import os
 
@@ -128,7 +127,8 @@ def get_periodics():
             [periodic_label_1, periodic_label_2],
         )
     elif os.uname().sysname == "rp2":
-        # software timers - rp2 has more than one but don't know how to use
+        # software timers - rp2 has more than one
+        # docs say don't need '-1'
         # flash 1/sec
 
         periodic_handler_1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
@@ -148,21 +148,25 @@ def get_periodics():
             [periodic_label_1, periodic_label_2],
         )
     elif os.uname().sysname == "esp8266":
-        # esp8266 has only one software timer
+        # esp8266 has one software timer
+        # docs say do use '-1'
         # flash 1/sec
-        periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+        periodic_handler_1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
         periodic_operator_1 = PeriodicOperator(
-            Timer(-1), 500, periodic_handler.irq_callback
+            Timer(-1), 500, periodic_handler_1.irq_callback
         )
         periodic_label_1 = "Flashing LED (2)"
 
         # sweep back and forth
-        # periodic_handler_1 = ServoSweep(Servo(Pin(4)), micropython.schedule)
-        # periodic_operator_1 = PeriodicOperator(
-        #     Timer(-1), 2000, periodic_handler.irq_callback
-        # )
-        # periodic_label_1 = "Servo Sweep (4)"
-        return ([periodic_operator_1], [periodic_label_1])
+        periodic_handler_2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        periodic_operator_2 = PeriodicOperator(
+            Timer(-1), 2000, periodic_handler_2.irq_callback
+        )
+        periodic_label_2 = "Servo Sweep (4)"
+        return (
+            [periodic_operator_1, periodic_operator_2],
+            [periodic_label_1, periodic_label_2],
+        )
     else:
         return ([], [])
 

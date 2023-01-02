@@ -19,7 +19,7 @@ class Servo:
 
     """
 
-    def __init__(self, pin, freq=50, min_us=500, max_us=2400, max_angle=180):
+    def __init__(self, pin, freq=50, min_us=600, max_us=2400, max_angle=180):
         """
         resets the servo back to the home position
         ;param max_angle: maximum angle - min_angle will be 0
