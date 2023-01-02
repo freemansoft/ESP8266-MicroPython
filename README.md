@@ -31,16 +31,21 @@ graph LR;
 ```
 
 # MicroPython
-Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html
+Load MicroPython onto your board.  See https://joe.blog.freemansoft.com/2022/11/flashing-micropython-onto-generic.html for an example with `esptool`.
+
 
 # Setup
 ## Required Hardware 
-1. ESP8266 IoT board or better
+1. IoT board that supports Micropython.  ESP8266 or better.  
+    * Tested with ESP8266. Micropython installed via `esptools`
+    * Tested with Pico W.  Micropython installed via `uf2` boot loader
+    * Tested with Seeed Studio ESP32C3 XAIO.  Micropython installed via `esptools` 
+        * That really didn't work well with the Micropython avaialble 2022/12. Looks like a sleep state issue
 1. Computer with USB port
 1. USB-to-Serial adapter that fits into the computer
     1. Used an old Prolific, possibly counterfeit, USB-to-3.3V cable on my Mac that showed up as `/dev/cu.usbserial-1140`ls
-    1. Used an old UsbBee on my Windows machine that showed up as `COM6`
-1. 3 wire cable from the adapter to the IoT board
+    1. Used an old USBee on my Windows machine that showed up as `COM6`. Required cable from adapter to device.
+    1. Used an old arduino FTDI adapter from 2011. Required cable from adapter to device.
 1. Plug the USB-to-Serial adapter into the computer and into the IoT board.  A COM or serial port should magially appear. If not, you may need to install drivers
 
 ## Command Line Tools (rshell)
@@ -387,8 +392,8 @@ sequenceDiagram
 # Open Issues - TODO
 Run Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
-1. Disable HTML page generation if the caller doesn't accept HTML
-1. Portal on first boot to enter network credentials not supported
+1. Disable HTML page generation if the caller doesn't accept HTML.
+1. Should add portal (AP on first boot to enter network credentials.
 1. Web UI
     1. Sync the slider to the value shown in the page currently for the slider
     1. Slider is the only AJAX call that doesn't refresh page so weird different behavior - probably should refresh to be accurate
@@ -396,10 +401,15 @@ Run Time
 Development Time
 1. Must manually create config.py and populate with the values.
 1. OTA not enabled.
+1. There is no obvious way to figure out what pins are supported on a given board via API
+1. The Wi-Fi status codes are different from board to board
+1. The sleep state codes are different from board to board both in number and in naming.
 
 Test Time
 1. Test runs the server but doesn't actually test or close the server
 
+## Compatibility issues
+Some of the boards use 10 bit pwm and some use 16 bit pwm. Duty cycles must be converted appropriately. The Servo class compensates for this.  The API accepts values that are converted into duty cycles.
 
 # Exercising the Scripts
 You can exercise the utilities in this package from the REPL. This assumes that you have 
@@ -552,6 +562,7 @@ MicroPython
 * https://blog.miguelgrinberg.com/post/micropython-and-the-internet-of-things-part-iii-building-a-micropython-application
 * https://techtutorialsx.com/2017/06/06/esp32-esp8266-micropython-automatic-connection-to-wifi/
 * https://github.com/dhylands/upy-examples Concise examples including callback class
+* https://forums.raspberrypi.com/viewtopic.php?t=307218 PWM and duty_16t()-vs-duty() 16bit-vs-10bit 65535-vs-1024
 
 Web Server Examples some based on the same core
 * https://randomnerdtutorials.com/esp32-esp8266-micropython-web-server/
@@ -573,19 +584,21 @@ Other : Wemos D1 cause that is compatible with the board I tested with.
 * https://www.instructables.com/MicroPython-IoT-Rover-Based-on-WeMos-D1-ESP-8266EX/
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/index.html
 * https://micropython-on-wemos-d1-mini.readthedocs.io/en/latest/setup.html
+
 Other: General
 * https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
 * https://github.com/pvanallen/esp32-getstarted/blob/master/docs/servo.md
 * https://github.com/pvanallen/esp32-getstarted/blob/master/examples/servo.py
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
+* https://howtomechatronics.com/how-it-works/how-servo-motors-work-how-to-control-servos-using-arduino/
 
 W3C
 * https://www.w3schools.com/colors/colors_names.asp
 
 # Example MicroPython ESP32C3 Micropython 1.9.1
 This is an example of the flashing and verification process.  I used `esptool.py` flash the device and `rshell` to interrogate it.
-
+ 
 ## Flash MicroPython to ESP32C3
 
 ```

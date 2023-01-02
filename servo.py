@@ -19,7 +19,7 @@ class Servo:
 
     """
 
-    def __init__(self, pin, freq=50, min_us=600, max_us=2400, max_angle=180):
+    def __init__(self, pin, freq=50, min_us=500, max_us=2400, max_angle=180):
         """
         resets the servo back to the home position
         ;param max_angle: maximum angle - min_angle will be 0
@@ -31,7 +31,14 @@ class Servo:
         self.degrees = 0  # match the angle to the minimum
         self.freq = freq
         self.max_angle = max_angle
-        self.pwm = PWM(pin, freq=freq, duty=0)
+        self.pqm = None
+        try:
+            self.pwm = PWM(pin, freq=freq, duty=0)
+        except TypeError:
+            # added to support rp2 which has 16 bit pwm
+            self.pwm = PWM(pin)
+            self.pwm.freq(freq)
+            self.pwm.duty_u16(0)
         self.write_angle(0)
 
     def __str__(self) -> str:
@@ -40,13 +47,27 @@ class Servo:
     def write_us(self, us):
         """Set the signal to be ``us`` microseconds long. Zero disables it."""
         if us == 0:
-            self.pwm.duty(0)
+            try:
+                self.pwm.duty(0)
+            except AttributeError:
+                self.pwm.duty_u16(0)
             self.us = 0
             self.degrees = -1
         else:
             us = min(self.max_us, max(self.min_us, us))
-            duty = us * 1024 * self.freq // 1000000
-            self.pwm.duty(duty)
+            try:
+                # the duty method takes the duty portion over 1024 so a portion of 1024
+                # convert us to duty cycle knowning the frequencies
+                duty = us * 1024 * self.freq // 1000000
+                self.pwm.duty(duty)
+                print("Servo request us:", us, " set duty to:", duty)
+            except AttributeError:
+                # from https://forums.raspberrypi.com/viewtopic.php?t=307218
+                # the rp2 actually accepts the duty cycle over 0-65536
+                # Total PWM period is 20ms or 20,000usec -
+                duty = us * 65536 * self.freq // 1000000
+                self.pwm.duty_u16(duty)
+                print("Servo request us:", us, " set duty_u16 to:", duty)
             self.us = us
             # self.degrees=  TODO back into
 
@@ -59,4 +80,5 @@ class Servo:
         us = self.min_us + total_range * degrees // self.max_angle
         # minor hack because we should calculate the degrees from microsecends in write_us()
         self.degrees = degrees
+        print("Servo: converted degrees: ", degrees, " to us:", us)
         self.write_us(us)

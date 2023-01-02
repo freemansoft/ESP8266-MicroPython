@@ -7,7 +7,7 @@ import requests
 
 num_iterations = 20
 num_sets = 1
-target_ip = "192.168.1.32"
+target_ip = "192.168.1.59"
 
 
 def the_func(target_path, target_ip):

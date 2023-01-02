@@ -165,7 +165,7 @@ class WebServer(object):
         pStart = query.split(" ")
         if not pStart[1].startswith(path_with_query):
             if self.debug_enabled:
-                print("Request Ignoring path:" + pStart[1])
+                print("Request Ignoring parms:" + pStart[1])
             return {}
         amperSplit = pStart[1][2:].split("&")
         # if self.debug_enabled:
@@ -262,7 +262,7 @@ class WebServer(object):
                 self._free_mem()
                 conn, addr = s.accept()
                 # browsers often make an immediate follow up request
-                conn.settimeout(30.0)
+                conn.settimeout(3.0)
                 if self.debug_enabled:
                     print("Got a connection from %s" % str(addr))
                 request = conn.recv(1024).decode()
@@ -274,9 +274,11 @@ class WebServer(object):
 
                 response = self._web_page_html()
                 response_raw = response.encode()
-                conn.send(
-                    "HTTP/1.1 200 OK\nContent-Type: text/html\nConnection: close\n\n".encode()
-                )
+                response_len_str = str(len(response_raw))
+                response_len_header = "Content-Length: " + response_len_str + "\n"
+                conn.send("HTTP/1.1 200 OK\nContent-Type: text/html\n".encode())
+                conn.send(response_len_header.encode())
+                conn.send("Connection: close\n\n".encode())
                 conn.sendall(response_raw)
                 conn.close()
                 if self.debug_enabled:

@@ -1,6 +1,7 @@
-from machine import Pin, Signal, Timer
+from machine import Pin, Signal, Timer, reset_cause
+import machine
 import micropython
-
+import os
 
 from config import wifi_ssid, wifi_password, hostname
 from config import web_repl_password
@@ -18,19 +19,167 @@ from periodicoperator import PeriodicOperator
 # timer/interrupt exception buffer
 micropython.alloc_emergency_exception_buf(100)
 
+# os.uname()
+# (sysname='esp32', nodename='esp32', release='1.19.1', version='v1.19.1 on 2022-06-18', machine='ESP32C3 module with ESP32C3')
+# (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1-782-g699477d12 on 2022-12-20 (GNU 12.1.0 MinSizeRel)', machine='Raspberry Pi Pico W with RP2040')
+# (sysname='esp8266', nodename='esp8266', release='2.2.0-dev(9422289)', version='v1.19.1 on 2022-06-18', machine='ESP module with ESP8266')
+
+
+def get_pins():
+    """
+    lists of pins whose status can be displayed
+    """
+    if os.uname().sysname == "rp2":
+        # rp2040
+        return [
+            Pin(i)
+            for i in [
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                26,
+                27,
+                28,
+            ]
+        ]
+    elif os.uname().machine.startswith("ESP32C3"):
+        # Seeed Studio Xiao
+        return [Pin(i) for i in [2, 3, 4, 5, 6, 7, 8, 9, 10]]
+    elif os.uname().sysname == "esp8266":
+        # linknode R1
+        return [Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]]
+    else:
+        return [Pin(i) for i in [2, 3, 4, 5]]
+
+
+def get_outs():
+    """
+    List of output pins that can be controlled.
+    """
+    if os.uname().sysname == "rp2":
+        # rp2040
+        return (
+            [
+                Signal(Pin(2, Pin.OUT), invert=True),
+                Signal(Pin(3, Pin.OUT), invert=False),
+            ],
+            ["LED (Pin 2)", "RELAY (Pin 3)"],
+        )
+    elif os.uname().machine.startswith("ESP32C3"):
+        # Seeed Studio Xiao
+        return (
+            [
+                Signal(Pin(2, Pin.OUT), invert=True),
+                Signal(Pin(3, Pin.OUT), invert=False),
+            ],
+            ["LED (Pin 2)", "RELAY (Pin 3)"],
+        )
+    elif os.uname().sysname == "esp8266":
+        # linknode R1
+        return (
+            [
+                Signal(Pin(2, Pin.OUT), invert=True),
+                Signal(Pin(16, Pin.OUT), invert=False),
+            ],
+            ["LED (Pin 2)", "RELAY (Pin 16)"],
+        )
+    else:
+        return ([], [])
+
+
+def get_periodics():
+    """
+    This exists because of the mix of Micropython hardware and software timer support on different boards
+    """
+    if os.uname().machine.startswith("ESP32C3"):
+        # hardware timers
+        # flash 1/sec
+        periodic_handler_1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+        periodic_operator_1 = PeriodicOperator(
+            Timer(2), 500, periodic_handler_1.irq_callback
+        )
+        periodic_label_1 = "Flashing LED (2)"
+        # sweep back and forth
+        periodic_handler_2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        periodic_operator_2 = PeriodicOperator(
+            Timer(0), 2000, periodic_handler_2.irq_callback
+        )
+        periodic_label_2 = "Servo Sweep (4)"
+        return (
+            [periodic_operator_1, periodic_operator_2],
+            [periodic_label_1, periodic_label_2],
+        )
+    elif os.uname().sysname == "rp2":
+        # software timers - rp2 has more than one but don't know how to use
+        # flash 1/sec
+
+        periodic_handler_1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+        periodic_operator_1 = PeriodicOperator(
+            Timer(), 500, periodic_handler_1.irq_callback
+        )
+        periodic_label_1 = "Flashing LED (2)"
+
+        # sweep back and forth
+        periodic_handler_2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        periodic_operator_2 = PeriodicOperator(
+            Timer(), 2000, periodic_handler_2.irq_callback
+        )
+        periodic_label_2 = "Servo Sweep (4)"
+        return (
+            [periodic_operator_1, periodic_operator_2],
+            [periodic_label_1, periodic_label_2],
+        )
+    elif os.uname().sysname == "esp8266":
+        # esp8266 has only one software timer
+        # flash 1/sec
+        periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
+        periodic_operator_1 = PeriodicOperator(
+            Timer(-1), 500, periodic_handler.irq_callback
+        )
+        periodic_label_1 = "Flashing LED (2)"
+
+        # sweep back and forth
+        # periodic_handler_1 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        # periodic_operator_1 = PeriodicOperator(
+        #     Timer(-1), 2000, periodic_handler.irq_callback
+        # )
+        # periodic_label_1 = "Servo Sweep (4)"
+        return ([periodic_operator_1], [periodic_label_1])
+    else:
+        return ([], [])
+
 
 def main():
+    print("Reset cause is ", reset_cause())
 
     """lets us test main() without board reset"""
     pin_to_toggle = Pin(2, Pin.OUT)
-    flash_pin(pin_to_toggle, 300, 1)
+    flash_pin(pin_to_toggle, 300, 2)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     ipinfo_sta = conn.do_connect()
     ipinfo_ap = conn.log_ap_state()
-    flash_pin(pin_to_toggle, 300, 2)
+    flash_pin(pin_to_toggle, 300, 4)
     print("STA network config:", ipinfo_sta)
     print("AP  network config:", ipinfo_ap)
-    flash_pin(pin_to_toggle, 300, 3)
+    flash_pin(pin_to_toggle, 300, 6)
 
     # http_get_print("http://micropython.org/ks/test.html")
 
@@ -38,69 +187,28 @@ def main():
     # webrepl.start(password=web_repl_password)
 
     server = None
-    import os
 
-    if os.uname().machine.startswith("ESP32C3"):
-        # (sysname='esp32', nodename='esp32', release='1.19.1', version='v1.19.1 on 2022-06-18', machine='ESP32C3 module with ESP32C3')
-        # flash 1/sec
-        periodic_handler1 = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
-        periodic_operator1 = PeriodicOperator(
-            Timer(2), 500, periodic_handler1.irq_callback
-        )
-        periodic_label1 = "Flashing LED (2)"
-        # sweep back and forth
-        periodic_handler2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
-        periodic_operator2 = PeriodicOperator(
-            Timer(0), 2000, periodic_handler2.irq_callback
-        )
-        periodic_label2 = "Servo Sweep (4)"
-
+    if (
+        os.uname().machine.startswith("ESP32C3")
+        or os.uname().sysname == "rp2"
+        or os.uname().sysname == "esp8266"
+    ):
+        (periodic_operators, periodic_labels) = get_periodics()
+        (out_pins, out_labels) = get_outs()
         # dummy up the pins for the SeedStudio Xiao ESP32C3 that I have https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
         server = WebServer(
-            [
-                Signal(Pin(2, Pin.OUT), invert=True),
-                Signal(Pin(3, Pin.OUT), invert=False),
-            ],
-            ["LED (Pin 2)", "RELAY (Pin 3)"],
+            out_pins,
+            out_labels,
             [Servo(Pin(4))],
             ["Servo (P 4)"],
-            [Pin(i) for i in [2, 3, 4, 5, 6, 7, 8, 9, 10]],
-            [periodic_operator1, periodic_operator2],
-            [periodic_label1, periodic_label2],
-            "Demo Page: ESP32C3",
+            get_pins(),
+            periodic_operators,
+            periodic_labels,
+            "Demo Page: " + os.uname().sysname,
             "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
         )
     else:
-        # (sysname='esp8266', nodename='esp8266', release='2.2.0-dev(9422289)', version='v1.19.1 on 2022-06-18', machine='ESP module with ESP8266')
-        # flash 1/sec
-        periodic_handler = TogglePin(Pin(2, Pin.OUT), micropython.schedule)
-        periodic_operator = PeriodicOperator(
-            Timer(-1), 500, periodic_handler.irq_callback
-        )
-        periodic_label = "Flashing LED"
-
-        # sweep back and forth
-        # periodic_handler = ServoSweep(Servo(Pin(14)), micropython.schedule)
-        # periodic_operator = PeriodicOperator(
-        #     Timer(-1), 2000, periodic_handler.irq_callback
-        # )
-        # periodic_label = "Servo Sweep"
-
-        # Defaults ESP8266 which is all I have other than ESP32
-        server = WebServer(
-            [
-                Signal(Pin(2, Pin.OUT), invert=True),
-                Signal(Pin(16, Pin.OUT), invert=False),
-            ],
-            ["LED (Pin 2)", "RELAY (Pin 16)"],
-            [Servo(Pin(14))],
-            ["Servo (P 14)"],
-            [Pin(i) for i in [0, 2, 4, 5, 12, 13, 15, 16]],
-            [periodic_operator],
-            [periodic_label],
-            "Demo Page: Possibly ESP8266",
-            "Station:" + str(ipinfo_sta[0]) + "<br/>AP:" + str(ipinfo_ap[0]),
-        )
+        print("************* unrecognized board ===>> " + str(os.uname()))
     server.run_server()
 
 

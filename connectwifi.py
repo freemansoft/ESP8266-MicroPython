@@ -12,21 +12,26 @@ class WIFI(object):
 
     def do_connect(self):
         """connect to wifi"""
-        if self.wifi_ssid is not None and self.wifi_password is not None:
+        if self.wifi_ssid and self.wifi_password:
             self.station = network.WLAN(network.STA_IF)
             self.station.active(True)
-            time.sleep_us(100)
-            self.station.config(dhcp_hostname=self.hostname)
+            time.sleep(1)
+            # removed because don't know how hostname vs dhcp_hostname should work
+            # self.station.config(dhcp_hostname=self.hostname)
+            # self.station.config(reconnects=0)
+            print("Active:", self.station.active(), " Available:", self.station.scan())
             if not self.station.isconnected():
-                print("connecting to network...")
+                print("connecting to network:" + self.wifi_ssid)
                 self.station.connect(self.wifi_ssid, self.wifi_password)
                 while not self.station.isconnected():
-                    pass
-            try:
-                host = self.station.config("hostname")
-            except ValueError:
-                # "hostname" is available in master, but not yet in June 2022 1.19.1 release
-                host = self.station.config("dhcp_hostname")
+                    # things like network.STAT_CONNECTING
+                    # print("Status:", self.station.status())
+                    time.sleep(1)
+            # try:
+            #     host = self.station.config("hostname")
+            # except ValueError:
+            #     # "hostname" is available in master, but not yet in June 2022 1.19.1 release
+            #     host = self.station.config("dhcp_hostname")
             ipinfo = self.station.ifconfig()
             return ipinfo
         else:
