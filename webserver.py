@@ -53,8 +53,9 @@ class WebServer(object):
                 function(){ var currentValue = $(this).text(); $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});}
             )
         });
+        $( function() { $( ".widget a" ).button(); } );
     </script>
-    </head><body> 
+    </head><body> <div class="widget">
     <fieldset><legend>Output Pins - Current state incl pin inversion</legend>%s</fieldset>
     <fieldset><legend>Servo Pins</legend>%s</fieldset>
     <fieldset><legend>Timed Operations</legend>%s</fieldset>
@@ -62,11 +63,11 @@ class WebServer(object):
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     </fieldset>
     <br/>%s<br/>
-    </body></html>"""
+    </div></body></html>"""
 
         control_pin_state = "".join(
             [
-                '<div><label>%s Currently:%s</label><br/><a href="?out_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?out_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
+                '<div><label>%s Currently:%s</label><br/><a href="?out_%d=on">ON</a><a href="?out_%d=off" >OFF</a></div>'
                 % (
                     pin_label,
                     str(control_pin.value()),
@@ -97,7 +98,7 @@ class WebServer(object):
         )
         timer_pin_state = "".join(
             [
-                '<div><label>%s Running: %s</label><br/><a href="?period_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?period_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
+                '<div><label>%s Running: %s</label><br/><a href="?period_%d=on">ON</a><a href="?period_%d=off">OFF</a></div>'
                 % (
                     periodic_label,
                     str(periodic_op.running()),
