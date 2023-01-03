@@ -36,59 +36,37 @@ class WebServer(object):
         # jquery.ready() replaces every div=servo... with the jquery slider
         # Need to turn of logging to increase performance
 
-        html = """<html>
-    <head> 
-        <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
-        <style>
-        html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
-        table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
-        body { background-color: lightgrey; }
-        .ui-controlgroup-vertical { width: 500px; }
-        .ui-controlgroup.ui-controlgroup-vertical > button.ui-button,
-        .ui-controlgroup.ui-controlgroup-vertical > .ui-controlgroup-label { text-align: center; }
-        </style>
-        <script>
-            $( function() { $( ".controlgroup" ).controlgroup(); $( ".controlgroup-vertical" ).controlgroup({ "direction": "vertical" }); } );
-            function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
-            $(document).ready(function(){
-                $('[id^=servo_]').each(
-                    function(){
-                        var currentValue = $(this).text();
-                        $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});
-                    }
-                )
-            });
-        </script>
-    </head>
-    <body> 
-    <h1>%s</h1>
-    <fieldset><legend>Output Pins - Current state takes into account pin inversion</legend><div class=controlgroup-vertical>
-    %s
-    </div></fieldset>
-
-    <fieldset><legend>Servo Pins</legend><div class=controlgroup-vertical>
-    %s
-    </div></fieldset>
-
-    <fieldset><legend>Timed Operations</legend> 
-    <div class=controlgroup-vertical>
-    %s
-    </div></fieldset>
-
-    <fieldset><legend>Raw Pin State - as read</legend> 
+        html = """<html><head> 
+    <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <style>
+    html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
+    table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
+    body { background-color: lightgrey; }
+    </style>
+    <script>
+        function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
+        $(document).ready(function(){
+            $('[id^=servo_]').each(
+                function(){ var currentValue = $(this).text(); $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});}
+            )
+        });
+    </script>
+    </head><body> 
+    <fieldset><legend>Output Pins - Current state incl pin inversion</legend>%s</fieldset>
+    <fieldset><legend>Servo Pins</legend>%s</fieldset>
+    <fieldset><legend>Timed Operations</legend>%s</fieldset>
+    <fieldset><legend>Raw Pin State (as read)</legend> 
     <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
     </fieldset>
-    
     <br/>%s<br/>
     </body></html>"""
 
         control_pin_state = "".join(
             [
-                '<div><label><strong>%s</strong> Currently On: %s</label><br/><a href="?out_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?out_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
+                '<div><label>%s Currently:%s</label><br/><a href="?out_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?out_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
                 % (
                     pin_label,
                     str(control_pin.value()),
@@ -105,11 +83,10 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                "<div><label><strong>%s</strong> uSec: %d degrees: %d</label><div id=servo_%d>%d</div></div>"
+                "<div><label>%s uSec: %d</label><div id=servo_%d>%d</div></div>"
                 % (
                     servo_label,
                     self.servo_pins[p].us,
-                    self.servo_pins[p].degrees,
                     p,
                     self.servo_pins[p].degrees,
                 )
@@ -120,7 +97,7 @@ class WebServer(object):
         )
         timer_pin_state = "".join(
             [
-                '<div><label><strong>%s</strong> Currently Running: %s</label><br/><a href="?period_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?period_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
+                '<div><label>%s Running: %s</label><br/><a href="?period_%d=on" class="ui-button ui-widget ui-corner-all">ON</a><a href="?period_%d=off" class="ui-button ui-widget ui-corner-all">OFF</a></div>'
                 % (
                     periodic_label,
                     str(periodic_op.running()),
@@ -147,7 +124,6 @@ class WebServer(object):
         #     print(monitor_pin_number, '\n', monitor_pin_state)
         return html % (
             self.title,
-            self.title,
             control_pin_state,
             servo_pin_state,
             timer_pin_state,
@@ -165,7 +141,7 @@ class WebServer(object):
         pStart = query.split(" ")
         if not pStart[1].startswith(path_with_query):
             if self.debug_enabled:
-                print("Request Ignoring parms:" + pStart[1])
+                print("Request: Ignoring:" + pStart[1])
             return {}
         amperSplit = pStart[1][2:].split("&")
         # if self.debug_enabled:
@@ -226,7 +202,7 @@ class WebServer(object):
             self._operate_periodic(parameters)
         else:
             if self.debug_enabled:
-                print("HTTP GET Only.  Ignoring: %s" % line_get)
+                print("HTTP GET Only. Ignoring: %s" % line_get)
 
     def _free_mem(self):
         try:
@@ -264,7 +240,7 @@ class WebServer(object):
                 # browsers often make an immediate follow up request
                 conn.settimeout(3.0)
                 if self.debug_enabled:
-                    print("Got a connection from %s" % str(addr))
+                    print("Got a connection")
                 request = conn.recv(1024).decode()
                 if self.debug_enabled:
                     print("Request Bytes:%d " % (len(request)))
