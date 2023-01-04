@@ -42,7 +42,7 @@ class WebServer(object):
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
-    html{font-family: Verndana; display:inline-block; margin: 0px auto; text-align: center;}
+    html{ display:inline-block; margin: 0px auto; text-align: center;}
     table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
     body { background-color: lightgrey; }
     </style>
@@ -59,9 +59,7 @@ class WebServer(object):
     <fieldset><legend>Output Pins - Current state incl pin inversion</legend>%s</fieldset>
     <fieldset><legend>Servo Pins</legend>%s</fieldset>
     <fieldset><legend>Timed Operations</legend>%s</fieldset>
-    <fieldset><legend>Raw Pin State (as read)</legend> 
-    <table><tr><th>Pin</th> %s </tr><tr><th>Pin State</th > %s </tr></table>
-    </fieldset>
+    <fieldset><legend>Raw Pin State (as read)</legend><table><tr><th>Pin</th><th>Pin State</th ></tr> %s </table></fieldset>
     <br/>%s<br/>
     </div></body></html>"""
 
@@ -113,12 +111,18 @@ class WebServer(object):
                 )
             ]
         )
-        # labels and values on own rows
-        monitor_pin_number = "".join(
-            ["<th> %s </hd>" % (str(p)) for p in self.pins_to_monitor]
-        )
         monitor_pin_state = "".join(
-            ["<td> %d </td>" % (p.value()) for p in self.pins_to_monitor]
+            [
+                # each pin on its own row to make JSON easier later
+                "<tr><td>%s</td><td>%d</td></tr>"
+                % (
+                    str(apin),
+                    apin.value(),
+                )
+                for p, apin in enumerate(
+                    self.pins_to_monitor,
+                )
+            ]
         )
 
         # if self.debug_enabled:
@@ -128,7 +132,6 @@ class WebServer(object):
             control_pin_state,
             servo_pin_state,
             timer_pin_state,
-            monitor_pin_number,
             monitor_pin_state,
             self.message,
         )
@@ -142,7 +145,7 @@ class WebServer(object):
         pStart = query.split(" ")
         if not pStart[1].startswith(path_with_query):
             if self.debug_enabled:
-                print("Request: Ignoring:" + pStart[1])
+                print("Request: Skipping param parsing:" + pStart[1])
             return {}
         amperSplit = pStart[1][2:].split("&")
         # if self.debug_enabled:
@@ -249,14 +252,25 @@ class WebServer(object):
 
                 self._handle_request(request)
 
-                response = self._web_page_html()
-                response_raw = response.encode()
-                response_len_str = str(len(response_raw))
-                response_len_header = "Content-Length: " + response_len_str + "\n"
-                conn.send("HTTP/1.1 200 OK\nContent-Type: text/html\n".encode())
-                conn.send(response_len_header.encode())
-                conn.send("Connection: close\n\n".encode())
-                conn.sendall(response_raw)
+                if request.find("text/html") > 0:
+                    if self.debug_enabled:
+                        print("Processing HTML request")
+                    response = self._web_page_html()
+                    response_raw = response.encode()
+                    response_len_str = str(len(response_raw))
+                    response_len_header = "Content-Length: " + response_len_str + "\n"
+                    conn.send("HTTP/1.1 200 OK\nContent-Type: text/html\n".encode())
+                    conn.send(response_len_header.encode())
+                    conn.send("Connection: close\n\n".encode())
+                    conn.sendall(response_raw)
+                else:
+                    if self.debug_enabled:
+                        print("Processing as JSON request")
+                    # prepare for json
+                    conn.send("HTTP/1.1 200 OK\nContent-Type: text/json\n".encode())
+                    conn.send("Connection: close\n\n".encode())
+                    conn.sendall("{}".encode())
+
                 conn.close()
                 if self.debug_enabled:
                     print("Connection closed ")
