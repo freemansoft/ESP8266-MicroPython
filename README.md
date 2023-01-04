@@ -592,6 +592,7 @@ Other: General
 * https://github.com/pvanallen/esp32-getstarted/blob/master/examples/servo.py
 * https://randomnerdtutorials.com/esp32-esp8266-analog-readings-micropython/
 * https://howtomechatronics.com/how-it-works/how-servo-motors-work-how-to-control-servos-using-arduino/
+* https://docs.micropython.org/en/latest/rp2/quickref.html Raspberry Pi Pico Board 
 
 W3C
 * https://www.w3schools.com/colors/colors_names.asp
