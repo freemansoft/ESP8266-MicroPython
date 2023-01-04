@@ -2,6 +2,32 @@
 import socket
 import gc
 
+html_template = """<html><head> 
+    <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <style>
+    html{ display:inline-block; margin: 0px auto; text-align: center;}
+    table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
+    body { background-color: lightgrey; }
+    </style>
+    <script>
+        function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
+        $(document).ready(function(){
+            $('[id^=servo_]').each(
+                function(){ var currentValue = $(this).text(); $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});}
+            )
+        });
+        $( function() { $( ".widget a" ).button(); } );
+    </script>
+    </head><body> <div class="widget">
+    <fieldset><legend>Output Pins - Current state incl pin inversion</legend>%s</fieldset>
+    <fieldset><legend>Servo Pins</legend>%s</fieldset>
+    <fieldset><legend>Timed Operations</legend>%s</fieldset>
+    <fieldset><legend>Raw Pin State (as read)</legend><table><tr><th>Pin</th><th>Pin State</th ></tr> %s </table></fieldset>
+    %s</div></body></html>"""
+
 
 class WebServer(object):
     """webserver that can change output pins and display current pin state.
@@ -31,37 +57,10 @@ class WebServer(object):
         self.title = title
         self.debug_enabled = True
 
-    def _web_page_html(self):
+    def _render_html(self, template):
         # jquery callback that generates a GET request using the id as the key
         # jquery.ready() replaces every div=servo... with the jquery slider
         # Need to turn of logging to increase performance
-
-        html = """<html><head> 
-    <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <style>
-    html{ display:inline-block; margin: 0px auto; text-align: center;}
-    table {border-collapse: collapse; display:inline-block; text-align: center;} tr {border-bottom: 1px solid #ddd; } th,td { padding: 10px;}
-    body { background-color: lightgrey; }
-    </style>
-    <script>
-        function changeServo(event, ui) { var id = $(this).attr('id'); $.get('/', {[id]: ui.value} ) }
-        $(document).ready(function(){
-            $('[id^=servo_]').each(
-                function(){ var currentValue = $(this).text(); $(this).empty().slider({min: 0, max:180, change:changeServo, value:currentValue});}
-            )
-        });
-        $( function() { $( ".widget a" ).button(); } );
-    </script>
-    </head><body> <div class="widget">
-    <fieldset><legend>Output Pins - Current state incl pin inversion</legend>%s</fieldset>
-    <fieldset><legend>Servo Pins</legend>%s</fieldset>
-    <fieldset><legend>Timed Operations</legend>%s</fieldset>
-    <fieldset><legend>Raw Pin State (as read)</legend><table><tr><th>Pin</th><th>Pin State</th ></tr> %s </table></fieldset>
-    <br/>%s<br/>
-    </div></body></html>"""
 
         control_pin_state = "".join(
             [
@@ -82,10 +81,9 @@ class WebServer(object):
         )
         servo_pin_state = "".join(
             [
-                "<div><label>%s uSec: %d</label><div id=servo_%d>%d</div></div>"
+                "<div><label>%s</label><div id=servo_%d>%d</div></div>"
                 % (
                     servo_label,
-                    self.servo_pins[p].us,
                     p,
                     self.servo_pins[p].degrees,
                 )
@@ -127,7 +125,7 @@ class WebServer(object):
 
         # if self.debug_enabled:
         #     print(monitor_pin_number, '\n', monitor_pin_state)
-        return html % (
+        return template % (
             self.title,
             control_pin_state,
             servo_pin_state,
@@ -255,7 +253,7 @@ class WebServer(object):
                 if request.find("text/html") > 0:
                     if self.debug_enabled:
                         print("Processing HTML request")
-                    response = self._web_page_html()
+                    response = self._render_html(html_template)
                     response_raw = response.encode()
                     response_len_str = str(len(response_raw))
                     response_len_header = "Content-Length: " + response_len_str + "\n"
@@ -264,10 +262,16 @@ class WebServer(object):
                     conn.send("Connection: close\n\n".encode())
                     conn.sendall(response_raw)
                 else:
+                    # TODO json document generation not implemented
                     if self.debug_enabled:
                         print("Processing as JSON request")
                     # prepare for json
+                    response = "{}"
+                    response_raw = response.encode()
+                    response_len_str = str(len(response_raw))
+                    response_len_header = "Content-Length: " + response_len_str + "\n"
                     conn.send("HTTP/1.1 200 OK\nContent-Type: text/json\n".encode())
+                    conn.send(response_len_header.encode())
                     conn.send("Connection: close\n\n".encode())
                     conn.sendall("{}".encode())
 
