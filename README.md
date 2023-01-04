@@ -547,6 +547,9 @@ Reply from 192.168.1.238: bytes=32 time=1ms TTL=255
     1. This means you may have to hit reload in the browser to allow the teset harness to terminate after a control c
 1. Servo values aren't validated as integers and may crash web server if non integers are provided
 1. FakeTimer does not actually fire periodic actions and is essentially a stub
+1. The onboard LED for the Pico W and the Pico are different.  The LED on the Pico W is on a GPIO on the wireless chip.  Don't know how to tell which one we are looking at. 
+    1. https://forums.raspberrypi.com/viewtopic.php?t=336836
+    1. https://datasheets.raspberrypi.com/picow/connecting-to-the-internet-with-pico-w.pdf 
 
 # References
 Used while initially creating this

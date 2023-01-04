@@ -1,4 +1,5 @@
 from machine import Pin, Signal, Timer, reset_cause
+import machine
 import micropython
 import os
 
@@ -79,8 +80,10 @@ def get_outs():
             [
                 Signal(Pin(2, Pin.OUT), invert=True),
                 Signal(Pin(3, Pin.OUT), invert=False),
+                # Pico W on board LED connected to pin on wireless chip not to GPIO
+                machine.Pin("LED", machine.Pin.OUT),
             ],
-            ["LED (Pin 2)", "RELAY (Pin 3)"],
+            ["LED (Pin 2)", "RELAY (Pin 3)", "Onboard LED"],
         )
     elif os.uname().machine.startswith("ESP32C3"):
         # Seeed Studio Xiao
@@ -98,7 +101,7 @@ def get_outs():
                 Signal(Pin(2, Pin.OUT), invert=True),
                 Signal(Pin(16, Pin.OUT), invert=False),
             ],
-            ["LED (Pin 2)", "RELAY (Pin 16)"],
+            ["Onboard LED", "RELAY (Pin 16)"],
         )
     else:
         return ([], [])
@@ -151,11 +154,28 @@ def get_periodics():
         return ([], [])
 
 
+def onboard_led():
+    if os.uname().machine.startswith("ESP32C3"):
+        # there is no onboard default on my ESP32C3
+        return Pin(2, Pin.OUT)
+    elif os.uname().sysname == "rp2":
+        # no easy way to figure out which one
+        # Pico no W
+        # machine.Pin(25, machine.Pin.OUT)
+        # Pico W
+        return machine.Pin("LED", machine.Pin.OUT)
+    elif os.uname().sysname == "esp8266":
+        return Pin(2, Pin.OUT)
+    else:
+        # there is no onboard by default so pick a random number.
+        return Pin(2, Pin.OUT)
+
+
 def main():
     print("Reset cause is ", reset_cause())
 
     """lets us test main() without board reset"""
-    pin_to_toggle = Pin(2, Pin.OUT)
+    pin_to_toggle = onboard_led()
     flash_pin(pin_to_toggle, 300, 2)
     conn = WIFI(wifi_ssid, wifi_password, hostname)
     ipinfo_sta = conn.do_connect()
