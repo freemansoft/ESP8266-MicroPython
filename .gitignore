@@ -2,3 +2,6 @@ config.py
 *.bin
 __pycache__/
 .vscode/
+boot.py
+settings.toml
+settings.toml.py

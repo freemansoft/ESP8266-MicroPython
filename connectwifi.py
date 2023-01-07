@@ -18,7 +18,6 @@ class WIFI(object):
             time.sleep(1)
             # removed because don't know how hostname vs dhcp_hostname should work
             # self.station.config(dhcp_hostname=self.hostname)
-            # self.station.config(reconnects=0)
             print("Active:", self.station.active(), " Available:", self.station.scan())
             if not self.station.isconnected():
                 print("connecting to network:" + self.wifi_ssid)
