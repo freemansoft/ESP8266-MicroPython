@@ -1,4 +1,4 @@
-from machine import Pin, Signal, Timer, reset_cause
+from machine import Pin, Signal, Timer, reset_cause, ADC
 import machine
 import micropython
 import os
@@ -123,14 +123,14 @@ def get_periodics():
         periodic_label_1 = "Flashing LED (2)"
         # sweep back and forth
         # support feedback servos with full 0-3.3v range
-        adc = machine.ADC(Pin(4))
+        adc = ADC(Pin(4))
         adc.atten(adc.ATTN_11DB)
         # Servo is on pin 5 because we need pin 4 for adc
         periodic_handler_2 = ServoSweep(
             Servo(Pin(5)), pin_adc=adc, schedule=micropython.schedule
         )
         periodic_operator_2 = PeriodicOperator(
-            Timer(0), 2000, periodic_handler_2.irq_callback
+            Timer(0), 1000, periodic_handler_2.irq_callback
         )
         periodic_label_2 = "Servo Sweep (5)"
         return (
@@ -151,7 +151,7 @@ def get_periodics():
         # sweep back and forth
         periodic_handler_2 = ServoSweep(Servo(Pin(5)), schedule=micropython.schedule)
         periodic_operator_2 = PeriodicOperator(
-            Timer(-1), 2000, periodic_handler_2.irq_callback
+            Timer(-1), 1000, periodic_handler_2.irq_callback
         )
         periodic_label_2 = "Servo Sweep (5)"
         return (

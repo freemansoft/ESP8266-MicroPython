@@ -18,23 +18,21 @@ class ServoSweep:
     def sweep(self, _):
         """Actual callback target run via schedule(). Can be used directly if no allocations. We don't use the timer anyway"""
         if self.pin_adc:
-            print(
-                " Analog from previous position raw : "
-                + str(self.pin_adc.read())
-                + " raw u16: "
-                + str(self.pin_adc.read_u16())
-            )
-        if self.targetangle == 0:
-            self.target.write_angle(90)
-            self.targetangle = 90
-        elif self.targetangle == 90:
-            self.target.write_angle(180)
-            self.targetangle = 180
+            # try highest resolution first
+            try:
+                print("Analog: prev position raw u16: " + str(self.pin_adc.read_u16()))
+            except AttributeError:
+                print("Analog prev position raw : " + str(self.pin_adc.read()))
+
+        new_target = self.targetangle
+        if self.targetangle < 180:
+            new_target = self.targetangle + 30
         else:
-            self.target.write_angle(0)
-            self.targetangle = 0
+            new_target = 0
         # Does this allocate memory? Does this require schedule()?
-        print("Sweeping to %s" % (str(self.targetangle)))
+        print("Sweeping to %s" % (str(new_target)))
+        self.target.write_angle(new_target)
+        self.targetangle = new_target
 
     def irq_callback(self, t):
         """Callback will schedule() an allocated sweep() if schedule() provided at init"""
