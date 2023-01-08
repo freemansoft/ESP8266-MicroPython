@@ -60,7 +60,7 @@ class Servo:
                 # convert us to duty cycle knowning the frequencies
                 duty = us * 1024 * self.freq // 1000000
                 self.pwm.duty(duty)
-                print("Servo request us:", us, " set duty to:", duty)
+                print("Servo: converted us:", us, " to duty:", duty)
             except AttributeError:
                 # from https://forums.raspberrypi.com/viewtopic.php?t=307218
                 # the rp2 actually accepts the duty cycle over 0-65536
@@ -80,5 +80,5 @@ class Servo:
         us = self.min_us + total_range * degrees // self.max_angle
         # minor hack because we should calculate the degrees from microsecends in write_us()
         self.degrees = degrees
-        print("Servo: converted degrees: ", degrees, " to us:", us)
+        print("Servo: degrees:", degrees, " equvalent to usec:", us)
         self.write_us(us)

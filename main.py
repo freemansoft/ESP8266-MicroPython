@@ -110,6 +110,8 @@ def get_outs():
 def get_periodics():
     """
     This exists because of the mix of Micropython hardware and software timer support on different boards
+    Servos moved to pin 5 because adc is 0-4 on ESP32C3
+    LED is on pin 2 because that is where onboard it is on ESP8266
     """
     if os.uname().machine.startswith("ESP32C3"):
         # hardware timers
@@ -120,11 +122,17 @@ def get_periodics():
         )
         periodic_label_1 = "Flashing LED (2)"
         # sweep back and forth
-        periodic_handler_2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        # support feedback servos with full 0-3.3v range
+        adc = machine.ADC(Pin(4))
+        adc.atten(adc.ATTN_11DB)
+        # Servo is on pin 5 because we need pin 4 for adc
+        periodic_handler_2 = ServoSweep(
+            Servo(Pin(5)), pin_adc=adc, schedule=micropython.schedule
+        )
         periodic_operator_2 = PeriodicOperator(
             Timer(0), 2000, periodic_handler_2.irq_callback
         )
-        periodic_label_2 = "Servo Sweep (4)"
+        periodic_label_2 = "Servo Sweep (5)"
         return (
             [periodic_operator_1, periodic_operator_2],
             [periodic_label_1, periodic_label_2],
@@ -141,17 +149,25 @@ def get_periodics():
         periodic_label_1 = "Flashing LED (2)"
 
         # sweep back and forth
-        periodic_handler_2 = ServoSweep(Servo(Pin(4)), micropython.schedule)
+        periodic_handler_2 = ServoSweep(Servo(Pin(5)), schedule=micropython.schedule)
         periodic_operator_2 = PeriodicOperator(
             Timer(-1), 2000, periodic_handler_2.irq_callback
         )
-        periodic_label_2 = "Servo Sweep (4)"
+        periodic_label_2 = "Servo Sweep (5)"
         return (
             [periodic_operator_1, periodic_operator_2],
             [periodic_label_1, periodic_label_2],
         )
     else:
         return ([], [])
+
+
+def get_servos():
+    """
+    lists of servo pins and servo labels
+    should be empty if no servos
+    """
+    return ([Servo(Pin(5))], ["Servo (P5 : 600-2400)"])
 
 
 def onboard_led():
@@ -199,12 +215,13 @@ def main():
     ):
         (periodic_operators, periodic_labels) = get_periodics()
         (out_pins, out_labels) = get_outs()
+        (servo_pins, servo_labels) = get_servos()
         # dummy up the pins for the SeedStudio Xiao ESP32C3 that I have https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
         server = WebServer(
             out_pins,
             out_labels,
-            [Servo(Pin(4))],
-            ["Servo (P 4)"],
+            servo_pins,
+            servo_labels,
             get_pins(),
             periodic_operators,
             periodic_labels,
