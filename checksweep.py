@@ -1,7 +1,7 @@
 """
 Usage in REPL:
 
-from checksweep import sweep_esp_32()
+from checksweep import sweep_esp_32
 sweep_esp_32()
 
 Depends on classes from this project:
@@ -21,6 +21,7 @@ def sweep_esp_32():
     Later extended to log the analog read back position if available.
     """
     adc = ADC(Pin(4))
+    # set full attenuation to have full 0-3v range
     adc.atten(adc.ATTN_11DB)
 
     servo = Servo(Pin(5))
