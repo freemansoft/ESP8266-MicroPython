@@ -24,6 +24,7 @@ class Servo:
         resets the servo back to the home position
         ;param max_angle: maximum angle - min_angle will be 0
         """
+        self.debug_enabled = True
         self.pin = pin
         self.min_us = min_us
         self.max_us = max_us
@@ -60,14 +61,16 @@ class Servo:
                 # convert us to duty cycle knowning the frequencies
                 duty = us * 1024 * self.freq // 1000000
                 self.pwm.duty(duty)
-                print("Servo: converted us:", us, " to duty:", duty)
+                if self.debug_enabled:
+                    print("Servo: converted us:", us, " to duty:", duty)
             except AttributeError:
                 # from https://forums.raspberrypi.com/viewtopic.php?t=307218
                 # the rp2 actually accepts the duty cycle over 0-65536
                 # Total PWM period is 20ms or 20,000usec -
                 duty = us * 65536 * self.freq // 1000000
                 self.pwm.duty_u16(duty)
-                print("Servo request us:", us, " set duty_u16 to:", duty)
+                if self.debug_enabled:
+                    print("Servo request us:", us, " set duty_u16 to:", duty)
             self.us = us
             # self.degrees=  TODO back into
 
@@ -80,5 +83,6 @@ class Servo:
         us = self.min_us + total_range * degrees // self.max_angle
         # minor hack because we should calculate the degrees from microsecends in write_us()
         self.degrees = degrees
-        print("Servo: degrees:", degrees, " equvalent to usec:", us)
+        if self.debug_enabled:
+            print("Servo: degrees:", degrees, " equvalent to usec:", us)
         self.write_us(us)

@@ -25,9 +25,10 @@ def sweep_esp_32():
     adc.atten(adc.ATTN_11DB)
 
     servo = Servo(Pin(5))
-    sweeper = ServoSweep(servo, pin_adc=adc)
+    sweeper = ServoSweep(servo, step_degrees=10)
 
     while True:
         # this advances the stepper by whatever the current step size is
         sweeper.sweep(None)
         time.sleep(1)
+        sweeper.log_pin_adc(adc)

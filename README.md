@@ -390,13 +390,15 @@ sequenceDiagram
 ```
 
 # Open Issues - TODO
-Run Time
+Open Run Time and Design Time
 1. Assumes `Pin.value()` returns correct pin state for `Pin.OUT` pins when docs say _The behaviour and return value of the method is undefined._
 1. Disable HTML page generation if the caller doesn't accept HTML.
 1. Should add portal (AP on first boot to enter network credentials.
 1. Web UI
     1. Sync the slider to the value shown in the page currently for the slider
     1. Slider is the only AJAX call that doesn't refresh page so weird different behavior - probably should refresh to be accurate
+1. A lot of servors are really 170 degree devices.  The test code moves between 0-180 but should probably do 0-170.  You see this in the analog readings.
+
 
 Development Time
 1. Must manually create config.py and populate with the values.
