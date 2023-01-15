@@ -26,3 +26,13 @@ def check_if():
     print(sta_if.isconnected())  # Check for successful connection
     print(sta_if.ifconfig())
     print(sta_if.status())
+
+
+def check_wlan_exists():
+    # got this from https://www.raspberrypi.com/documentation/microcontrollers/micropython.html
+    # RP2040 check - works for others?
+    if hasattr(network, "WLAN"):
+        # the board has WLAN capabilities
+        print("has wlan")
+    else:
+        print('no wlan')
