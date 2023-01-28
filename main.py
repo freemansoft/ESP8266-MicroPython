@@ -19,11 +19,15 @@ from periodicoperator import PeriodicOperator
 # timer/interrupt exception buffer
 micropython.alloc_emergency_exception_buf(100)
 
+# import os
 # os.uname()
 # (sysname='esp32', nodename='esp32', release='1.19.1', version='v1.19.1 on 2022-06-18', machine='ESP32C3 module with ESP32C3')
-# (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1-782-g699477d12 on 2022-12-20 (GNU 12.1.0 MinSizeRel)', machine='Raspberry Pi Pico W with RP2040')
+# (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1-796-gf4811b0b4 on 2023-01-13 (GNU 12.1.0 MinSizeRel)', machine='Raspberry Pi Pico W with RP2040')
 # (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1 on 2022-06-18 (GNU 11.2.0 MinSizeRel)', machine='Pimoroni Tiny 2040 with RP2040')
 # (sysname='esp8266', nodename='esp8266', release='2.2.0-dev(9422289)', version='v1.19.1 on 2022-06-18', machine='ESP module with ESP8266')
+# import sys
+# sys.implementation
+# (name='micropython', version=(1, 19, 1), _machine='Raspberry Pi Pico W with RP2040', _mpy=4358)
 
 
 def get_pins():
