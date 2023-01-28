@@ -58,15 +58,15 @@ class Servo:
             us = min(self.max_us, max(self.min_us, us))
             try:
                 # the duty method takes the duty portion over 1024 so a portion of 1024
-                # convert us to duty cycle knowning the frequencies
+                # convert usec to duty cycle knowing  frequency in this case 50Hz results in 20ms period
                 duty = us * 1024 * self.freq // 1000000
                 self.pwm.duty(duty)
                 if self.debug_enabled:
                     print("Servo: converted us:", us, " to duty:", duty)
             except AttributeError:
                 # from https://forums.raspberrypi.com/viewtopic.php?t=307218
-                # the rp2 actually accepts the duty cycle over 0-65536
-                # Total PWM period is 20ms or 20,000usec -
+                # the rp2 rp2040 is 16 bit. The duty cycle over 0-65535
+                # Total PWM period is 20ms or 20,000usec - 50Hz
                 duty = us * 65536 * self.freq // 1000000
                 self.pwm.duty_u16(duty)
                 if self.debug_enabled:

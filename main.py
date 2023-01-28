@@ -22,6 +22,7 @@ micropython.alloc_emergency_exception_buf(100)
 # os.uname()
 # (sysname='esp32', nodename='esp32', release='1.19.1', version='v1.19.1 on 2022-06-18', machine='ESP32C3 module with ESP32C3')
 # (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1-782-g699477d12 on 2022-12-20 (GNU 12.1.0 MinSizeRel)', machine='Raspberry Pi Pico W with RP2040')
+# (sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1 on 2022-06-18 (GNU 11.2.0 MinSizeRel)', machine='Pimoroni Tiny 2040 with RP2040')
 # (sysname='esp8266', nodename='esp8266', release='2.2.0-dev(9422289)', version='v1.19.1 on 2022-06-18', machine='ESP module with ESP8266')
 
 
@@ -76,6 +77,7 @@ def get_outs():
     """
     if os.uname().sysname == "rp2":
         # rp2040
+        # Only the Raspberry Pi Pico boards implement Pin("LED")
         return (
             [
                 Signal(Pin(2, Pin.OUT), invert=True),
@@ -176,7 +178,9 @@ def onboard_led():
         return Pin(2, Pin.OUT)
     elif os.uname().sysname == "rp2":
         # no easy way to figure out which one
-        # Pico no W
+        # Pimoroni RP2040
+        # machine.Pin(18, machine.Pin.OUT)
+        # Pico
         # machine.Pin(25, machine.Pin.OUT)
         # Pico W
         return machine.Pin("LED", machine.Pin.OUT)

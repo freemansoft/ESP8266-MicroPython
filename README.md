@@ -95,7 +95,14 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp flashpin.py /pyboard
     cp togglepin.py /pyboard
     cp webserver.py /pyboard
+
+    cp checknet.py /pyboard
+    cp checksweep.py /pyboard
+    cp checkfreemometer.py /pyboard
     ```
+
+### sample boot.py files
+There are two `boot-xxx.py` files.  One is a copy of the default boot.py for ???? board.  The other is a sample boot.py that enables the repl across UART0.  It has been tested on an RP2040 where UART0 was connected to an HC-05/6 Bluetooth module.  The REPL becomes available to any virtual port created when pairing with that module.
 
 # Running and testing the web server.
 Most people will just run the server on their device per the instructions above
