@@ -95,10 +95,15 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp flashpin.py /pyboard
     cp togglepin.py /pyboard
     cp webserver.py /pyboard
-
+    ```
+1. rshell - some sample and quick tests
+    ```
     cp checknet.py /pyboard
     cp checksweep.py /pyboard
-    cp checkfreemometer.py /pyboard
+    ```
+1. rshell - if you are playing with the freemometer
+    cp freemometer/checkfreemometer.py /pyboard
+    cp freemometer/sh1106.py /pyboard
     ```
 
 ### sample boot.py files
@@ -721,5 +726,31 @@ Plus any modules on the filesystem
 ['__class__', '__name__', 'ADC', 'DEEPSLEEP', 'DEEPSLEEP_RESET', 
 'HARD_RESET', 'I2C', 'PWM', 'PWRON_RESET', 'Pin', 'RTC', 'SOFT_RESET', 'SPI', 'Signal', 'SoftI2C', 'SoftSPI', 'Timer', 'UART', 'WDT', 'WDT_RESET', 'bitstream', 'deepsleep', 'disable_irq', 'enable_irq', 'freq', 'idle', 'lightsleep', 'mem16', 'mem32', 'mem8', 'reset', 'reset_cause', 'sleep', 'soft_reset', 'time_pulse_us', 'unique_id']
 >>>
+
+```
+
+## Verify Board RP2040
+
+```
+C:\Users\joe\Documents\GitHub\ESP8266-MicroPython> repl
+Entering REPL. Use Control-X to exit.
+
+>>> os.uname()
+(sysname='rp2', nodename='rp2', release='1.19.1', version='v1.19.1-831-g4f3780a15 on 2023-01-20 (GNU 12.1.0 MinSizeRel)', machine='Raspberry Pi Pico W with RP2040')
+>>> help('modules')
+__main__          gc                uasyncio/event    umachine
+_boot             lwip              uasyncio/funcs    uos
+_boot_fat         math              uasyncio/lock     urandom
+_onewire          micropython       uasyncio/stream   ure
+_rp2              mip/__init__      ubinascii         urequests
+_thread           neopixel          ucollections      uselect
+_uasyncio         network           ucryptolib        usocket
+_webrepl          ntptime           uctypes           ussl
+builtins          onewire           uerrno            ustruct
+cmath             rp2               uhashlib          usys
+dht               uarray            uheapq            utime
+ds18x20           uasyncio/__init__ uio               uwebsocket
+framebuf          uasyncio/core     ujson             uzlib
+Plus any modules on the filesystem
 
 ```
