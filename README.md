@@ -101,13 +101,12 @@ This document assumes you use rshell to push and pull changes from your IoT devi
     cp checknet.py /pyboard
     cp checksweep.py /pyboard
     ```
-1. rshell - if you are playing with the freemometer
-    cp freemometer/checkfreemometer.py /pyboard
-    cp freemometer/sh1106.py /pyboard
-    ```
+1. If you are playing with the freemometer hardware see freemometer/README.md.  That could really needs to be moved somewhere else
 
 ### sample boot.py files
-There are two `boot-xxx.py` files.  One is a copy of the default boot.py for ???? board.  The other is a sample boot.py that enables the repl across UART0.  It has been tested on an RP2040 where UART0 was connected to an HC-05/6 Bluetooth module.  The REPL becomes available to any virtual port created when pairing with that module.
+There are two `boot-xxx.py` files.  
+* `boot-orig.py` is a copy of the default boot.py for ???? board.  
+* `boot-uart-repl.py` is a sample boot.py that enables the repl across UART0.  It has been tested on an RP2040 where UART0 was connected to an HC-05/6 Bluetooth module.  The REPL becomes available to any virtual port created when pairing with that Bluetooth module.
 
 # Running and testing the web server.
 Most people will just run the server on their device per the instructions above
