@@ -110,7 +110,7 @@ def demo_servo():
 
 def demo_sh1106():
     # copy sh1106 to /pyboard
-    # https://github.com/scy/SH1106/blob/master/sh1106.py
+    # https://github.com/robert-hh/SH1106
     # https://docs.micropython.org/en/latest/esp8266/tutorial/ssd1306.html display commands
     from machine import SPI
     import sh1106
@@ -132,7 +132,10 @@ def demo_sh1106():
     time.sleep(1)
 
     display_sh1106.text("Hello World!", 0, 0, 1)
-    display_sh1106.text("Goodby Cruel World!", 0, 10, 1)
+    # this text will be truncated -- appropriate I think for a goodbye message
+    display_sh1106.text("So long. Thanks", 0, 10, 1)
+    display_sh1106.text("Thanks for the ", 0, 20, 1)
+    display_sh1106.text("fish", 0, 30, 1)
     display_sh1106.show()
     time.sleep(2)
     display_sh1106.fill(0)  # clears the display
