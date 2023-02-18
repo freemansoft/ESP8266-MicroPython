@@ -6,6 +6,14 @@ This has been tested with the Inland IIC SPI OLED 128x64 display module that is 
 
 The repository links to the most popular [MicroPython driver by robert-hh](https://github.com/robert-hh/SH1106) which is not yet in (micropython-lib)[https://github.com/micropython/micropython-lib/tree/master/micropython/drivers/display]
 
+## draw.io files
+The `drawio` files can be viewed and edited with `draw.io` either the web version or local installation.
+
+* `dials.io` Sample dials for the IKEA Dekad
+* `freemometer_Pico.drawio` Schematic that uses the Pico that matches `checkfremometer_pico.py`
+* `freemometer_Tiny2040.drawio` Schematic that uses the Pimoroni Tiny 2040 that matches `checkfreemometer_tiny2040`
+
+
 ## Steps
 1. Open rshell
     ```
