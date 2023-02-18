@@ -14,14 +14,16 @@ The `drawio` files can be viewed and edited with `draw.io` either the web versio
 * `freemometer_Tiny2040.drawio` Schematic that uses the Pimoroni Tiny 2040 that matches `checkfreemometer_tiny2040`
 
 
-## Steps
+## Steps - testing with the pico
+Use the appropriate `checkfreemometer` file
+
 1. Open rshell
     ```
     rshell -p <com port>
     ```
 1. Copy the necessary files over
     ```
-    cp checkfreemometer.py /pyboard
+    cp checkfreemometer_pico.py /pyboard
     cp SH1106/sh1106.py /pyboard
     ```
 1. If you are going to exercise everything in the freemometer then you need `servo.py`
@@ -34,7 +36,7 @@ The `drawio` files can be viewed and edited with `draw.io` either the web versio
     ```
 1. Load the verification script
     ```
-    from checkfreemometer import *
+    from checkfreemometer_pico import *
     ```
 1. verify the ssh1106 is working
     ```
