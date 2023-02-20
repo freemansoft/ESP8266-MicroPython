@@ -42,3 +42,18 @@ Use the appropriate `checkfreemometer` file
     ```
     demo_sh1106()
     ```
+
+### Checking out the RGBW Neopixels
+
+```
+import  checkfreemometer_pico
+from checkfreemometer_pico import *
+verify_neopixels_white_rgbw()
+demo_neopixels_rgbw()
+
+demo_servo()
+demo_motor()
+
+verify_neopixels_white_rgbw()
+
+```

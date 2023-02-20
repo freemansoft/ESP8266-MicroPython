@@ -18,13 +18,99 @@ def demo_rp2040_led():
         time.sleep_ms(300)
 
 
-def demo_neopixels():
+def verify_neopixels_white_rgbw():
+    """This is currently set up for a RGBW Neopixel"""
     import neopixel
 
     # neopixels
     neopixel_pin_num = 16
-    num_neopixels = 2
-    np = neopixel.NeoPixel(Pin(neopixel_pin_num), num_neopixels)
+    num_neopixels = 8
+    neopixel_bpp = 4
+    np = neopixel.NeoPixel(Pin(neopixel_pin_num), num_neopixels, bpp=neopixel_bpp)
+    for j in range(num_neopixels):
+        np[j] = (0, 0, 0, 20)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (0, 0, 0, 60)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (0, 0, 0, 180)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (0, 0, 0, 250)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (0, 0, 0, 0)
+    np.write()
+
+
+def verify_neopixels_white_rgb():
+    """This is currently set up for a RGB Neopixel"""
+    import neopixel
+
+    # neopixels
+    neopixel_pin_num = 16
+    num_neopixels = 8
+    neopixel_bpp = 3
+    np = neopixel.NeoPixel(Pin(neopixel_pin_num), num_neopixels, bpp=neopixel_bpp)
+    for j in range(num_neopixels):
+        np[j] = (20, 20, 20)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (64, 64, 64)
+    np.write()
+    time.sleep(1)
+    for j in range(num_neopixels):
+        np[j] = (180, 180, 180)
+    np.write()
+    time.sleep(1)
+
+
+def demo_neopixels_rgbw():
+    """This is currently set up for a RGBW Neopixel"""
+    import neopixel
+
+    # neopixels
+    neopixel_pin_num = 16
+    num_neopixels = 8
+    neopixel_bpp = 4
+    np = neopixel.NeoPixel(Pin(neopixel_pin_num), num_neopixels, bpp=neopixel_bpp)
+
+    print("show some pretty colors")
+    # fade in/out
+    for i in range(0, 4 * 256, 4):
+        # set all pixels
+        for j in range(num_neopixels):
+            if (i // 256) % 2 == 0:
+                val = i & 0xFF
+            else:
+                val = 255 - (i & 0xFF)
+            np[j] = (val, 0, 255 - val, 0)
+        np.write()
+        time.sleep_ms(10)
+
+    # clear
+    for i in range(num_neopixels):
+        np[i] = (0, 0, 0, 0)
+
+    np.write()
+    time.sleep(1)
+
+
+def demo_neopixels_rgb():
+    """This is currently set up for a RGBW Neopixel"""
+    import neopixel
+
+    # neopixels
+    neopixel_pin_num = 16
+    num_neopixels = 8
+    neopixel_bpp = 3
+    np = neopixel.NeoPixel(Pin(neopixel_pin_num), num_neopixels, bpp=neopixel_bpp)
 
     print("show some pretty colors")
     # fade in/out
@@ -44,6 +130,7 @@ def demo_neopixels():
         np[i] = (0, 0, 0)
 
     np.write()
+    time.sleep(1)
 
 
 def demo_motor():
@@ -72,16 +159,16 @@ def demo_motor():
     # lets try motor speed control with PWM
     pwm1a = PWM(motor1b)
     pwm1a.freq(10000)
-    print("Motor 10000/65000")
+    print("Motor (pwm) 10000/65000")
     pwm1a.duty_u16(10000)  # out of 65000
     time.sleep(1)
-    print("Motor 25000/65000")
+    print("Motor (pwm) 25000/65000")
     pwm1a.duty_u16(25000)  # out of 65000
     time.sleep(1)
-    print("Motor 45000/65000")
+    print("Motor (pwm) 45000/65000")
     pwm1a.duty_u16(45000)  # out of 65000
     time.sleep(1)
-    print("Motor 00000/65000")
+    print("Motor (pwm) 00000/65000")
     pwm1a.duty_u16(00000)  # out of 65000
     time.sleep(1)
     pwm1a.deinit()
@@ -94,8 +181,8 @@ def demo_servo():
 
     # The face servo moter control pin
     servo_pin_num = 22
-
-    servo = Servo(Pin(servo_pin_num, Pin.OUT))
+    # The servo in one of mine has a min of 800
+    servo = Servo(Pin(servo_pin_num, Pin.OUT), min_us=800)
     print("servo 0")
     servo.write_angle(0)
     time.sleep(1)
@@ -105,7 +192,9 @@ def demo_servo():
     print("servo 160")
     servo.write_angle(160)
     time.sleep(1)
-    servo.write_us(0)
+    print("servo 0")
+    servo.write_angle(0)
+    time.sleep(1)
 
 
 def demo_sh1106():

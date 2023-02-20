@@ -5,3 +5,7 @@ __pycache__/
 boot.py
 settings.toml
 settings.toml.py
+
+# draw.io temporary files
+*.bkp
+*.dtmp
