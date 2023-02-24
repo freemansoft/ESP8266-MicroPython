@@ -1,9 +1,11 @@
+# MICROPYTHON
+#
 # This expects
 # sh1106.py and servo.py to be on the pyboard
 #
 # Usage in the REPL
 """
-from checkfreemometer import *
+from check_fm_mp_pico import *
 """
 
 from machine import Pin

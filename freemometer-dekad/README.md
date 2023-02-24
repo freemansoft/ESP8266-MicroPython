@@ -1,3 +1,4 @@
+Freemometer test programs for various processors and peripheral configurations
 
 This directory really belongs in another repository.  It is a hack that it is here for now :-()
 
@@ -10,12 +11,13 @@ The repository links to the most popular [MicroPython driver by robert-hh](https
 The `drawio` files can be viewed and edited with `draw.io` either the web version or local installation.
 
 * `dials.io` Sample dials for the IKEA Dekad
-* `freemometer_Pico.drawio` Schematic that uses the Pico that matches `checkfremometer_pico.py`
-* `freemometer_Tiny2040.drawio` Schematic that uses the Pimoroni Tiny 2040 that matches `checkfreemometer_tiny2040`
+* `freemometer_Pico.drawio` Schematic that expected by the Pico tests `check_fm_mp_pico.py`
+* `freemometer_QTPY_esp32_s2.drawio` Schematic that expected by the Pico tests `check_fm_cp_qtpy_esp32_s2.py`
+* `freemometer_Tiny2040.drawio`  Schematic that expected by the Pico tests `check_fm_mp_tiny2040.py`
 
 
 ## Steps - testing with the pico
-Use the appropriate `checkfreemometer` file
+Use the appropriate `check_fm` file
 
 1. Open rshell
     ```
@@ -23,7 +25,7 @@ Use the appropriate `checkfreemometer` file
     ```
 1. Copy the necessary files over
     ```
-    cp checkfreemometer_pico.py /pyboard
+    cp check_fm_mp_pico.py /pyboard
     cp SH1106/sh1106.py /pyboard
     ```
 1. If you are going to exercise everything in the freemometer then you need `servo.py`
@@ -36,7 +38,7 @@ Use the appropriate `checkfreemometer` file
     ```
 1. Load the verification script
     ```
-    from checkfreemometer_pico import *
+    from check_fm_mp_pico import *
     ```
 1. verify the ssh1106 is working
     ```
@@ -46,8 +48,8 @@ Use the appropriate `checkfreemometer` file
 ### Checking out the RGBW Neopixels
 
 ```
-import  checkfreemometer_pico
-from checkfreemometer_pico import *
+import  check_fm_mp_pico
+from check_fm_mp_pico import *
 verify_neopixels_white_rgbw()
 demo_neopixels_rgbw()
 
