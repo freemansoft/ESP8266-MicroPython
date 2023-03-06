@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Joe Freeman joe@freemansoft.com
+#
+# SPDX-License-Identifier: MIT
+#
 class ServoSweep:
     """A sample target class that gets invoked as a timer callback"""
 

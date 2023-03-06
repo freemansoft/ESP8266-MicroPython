@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Joe Freeman joe@freemansoft.com
+#
+# SPDX-License-Identifier: MIT
+#
 class PeriodicOperator:
     """A construct that binds a timer to a function.
     PeriodicOperator(Timer(-1), ms, function)

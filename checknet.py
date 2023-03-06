@@ -1,5 +1,9 @@
+# SPDX-FileCopyrightText: 2022 Joe Freeman joe@freemansoft.com
+#
+# SPDX-License-Identifier: MIT
+#
 """
-Simple test program.  
+Simple test program.
 Should probably rename main.py to something else if you want to use start_network()
 """
 import network
@@ -35,4 +39,4 @@ def check_wlan_exists():
         # the board has WLAN capabilities
         print("has wlan")
     else:
-        print('no wlan')
+        print("no wlan")

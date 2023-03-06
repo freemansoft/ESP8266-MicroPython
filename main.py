@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Joe Freeman joe@freemansoft.com
+#
+# SPDX-License-Identifier: MIT
+#
 from machine import Pin, Signal, Timer, reset_cause, ADC
 import machine
 import micropython

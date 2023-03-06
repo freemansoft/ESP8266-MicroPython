@@ -1,9 +1,13 @@
+# SPDX-FileCopyrightText: 2022 Joe Freeman joe@freemansoft.com
+#
+# SPDX-License-Identifier: MIT
+#
 # Complete project details at https://RandomNerdTutorials.com
 import socket
 import gc
 
-html_template = """<html><head> 
-    <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"> 
+html_template = """<html><head>
+    <title>%s</title> <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/excite-bike/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
